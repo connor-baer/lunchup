@@ -7,6 +7,48 @@ var message = require('./utils/message');
 var app = express();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
+/*
+ * Actions
+ */
+
+app.post('/slack/actions', urlencodedParser, (req, res) => {
+  if (content.token != config.SLACK_VERIFICATION_TOKEN) {
+    res.status(403).end('Access forbidden');
+  } else {
+    // Best practice to respond with empty 200 status code.
+    res.status(200).end();
+    const content = req.body;
+    const responseURL = content.response_url;
+    let action = content.actions[0];
+
+    if (!action) {
+      return callback(new Error('No action specified'));
+    }
+
+    let name = action.name;
+
+    let message = {}
+
+    switch (name) {
+      case 'join':
+        message = {
+          text: `Awesome! Happy to have you on board.`
+        };
+        break;
+      default:
+        message = {
+          response_type: 'in_channel',
+          text: "This action hasn't been configured yet"
+        };
+    }
+    respond(responseURL, message);
+  }
+});
+
+/*
+ * Commands
+ */
+
 app.post('/slack/commands', urlencodedParser, (req, res) => {
   if (content.token != config.SLACK_VERIFICATION_TOKEN) {
     res.status(403).end('Access forbidden');
@@ -77,65 +119,18 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
   }
 });
 
-module.exports = (
-  user,
-  channel,
-  text = '',
-  command = {},
-  botToken = null,
-  callback
-) => {
-  callback(null, {
-    response_type: 'in_channel',
-    text: `Welcome to LunchUp! Feeling hungry and social?`,
-    attachments: [
-      {
-        text:
-          'Would you like to be paired up for lunch with a random coworker every week?',
-        fallback: 'You are unable to participate.',
-        callback_id: 'wopr_game',
-        color: '#3388ff',
-        attachment_type: 'default',
-        actions: [
-          {
-            name: 'join',
-            text: 'Yes please!',
-            style: 'primary',
-            type: 'button',
-            value: 'true'
-          },
-          {
-            name: 'join',
-            text: 'No thanks.',
-            style: 'danger',
-            type: 'button',
-            value: 'false'
-          },
-          {
-            name: 'join',
-            text: 'Maybe later.',
-            type: 'button',
-            value: 'later'
-          }
-        ]
-      }
-    ]
-  });
-};
-
-app.post('/slack/actions', urlencodedParser, (req, res) => {
-  res.status(200).end(); // best practice to respond with 200 status
-  var actionJSONPayload = JSON.parse(req.body.payload); // parse URL-encoded payload JSON string
-  var message = {
-    text:
-      actionJSONPayload.user.name +
-      ' clicked: ' +
-      actionJSONPayload.actions[0].name,
-    replace_original: false
-  };
-  sendMessageToSlackResponseURL(actionJSONPayload.response_url, message);
-});
-
+// app.post('/slack/actions', urlencodedParser, (req, res) => {
+//   res.status(200).end(); // best practice to respond with 200 status
+//   var actionJSONPayload = JSON.parse(req.body.payload); // parse URL-encoded payload JSON string
+//   var message = {
+//     text:
+//       actionJSONPayload.user.name +
+//       ' clicked: ' +
+//       actionJSONPayload.actions[0].name,
+//     replace_original: false
+//   };
+//   sendMessageToSlackResponseURL(actionJSONPayload.response_url, message);
+// });
 
 
 app.get('/', function(req, res) {
