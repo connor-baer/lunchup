@@ -2,9 +2,9 @@
   "name": "lunchup",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lunchup.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon lunchup.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
