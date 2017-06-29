@@ -22,7 +22,7 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
     let action = content.actions[0];
 
     if (!action) {
-      return callback(new Error('No action specified'));
+      res.status(422).end('No action specified');
     }
 
     let name = action.name;
@@ -57,14 +57,14 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
     res.status(200).end();
     const content = req.body;
     const responseURL = content.response_url;
-    let command = content.command;
+    const command = content.command;
 
     if (!command) {
-      return callback(new Error('No command specified'));
+      res.status(422).end('No command specified');
     }
 
     if (command[0] !== '/') {
-      return callback(new Error('Commands must start with /'));
+      res.status(422).end('Commands must start with /');
     }
 
     let name = command.substr(1);
