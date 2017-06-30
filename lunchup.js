@@ -28,6 +28,7 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
 
   let success = {};
   let failure = {};
+  let message = {};
 
   switch (name) {
     case 'optin':
@@ -39,9 +40,16 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
         text: `You've already signed up!`,
         replace_original: true
       };
-      addItem('users', user)
-        .then(respond(response_url, success))
-        .catch(respond(response_url, failure));
+      storage
+        .addItem('users', user)
+        .then(status => {
+          console.log(status);
+          respond(response_url, success);
+        })
+        .catch(error => {
+          console.log(error);
+          respond(response_url, failure);
+        });
       break;
     case 'optout':
       message = {

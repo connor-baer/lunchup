@@ -34,9 +34,9 @@ module.exports = {
         const withItem = _.concat(currentData, item);
         const newData = { [fileName]: withItem };
         writeStorage(fileName, newData);
-        resolve(true);
+        resolve("Item successfully added.");
       }
-      reject(false);
+      reject("Item already exists.");
     })
   },
   // addItem(fileName, item) {
