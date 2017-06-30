@@ -1,6 +1,6 @@
 var request = require('request');
 
-module.exports = (url, FORMmessage) => {
+module.exports = (url, FORMmessage, callback) => {
   const postOptions = {
     url: url,
     method: 'POST',
@@ -10,9 +10,5 @@ module.exports = (url, FORMmessage) => {
     form: FORMmessage
   };
 
-  request(postOptions, (error, response, body) => {
-    if (error) {
-      // TODO: Handle errors.
-    }
-  });
+  request(postOptions, callback);
 };

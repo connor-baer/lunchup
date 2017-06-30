@@ -6,20 +6,34 @@ const respond = require('./utils/respond');
 const message = require('./utils/message');
 const storage = require('./utils/storage');
 const app = express();
-var urlencodedParser = bodyParser.urlencoded({ extended: false });
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+const token = config.SLACK_VERIFICATION_TOKEN;
 
 const crypto = require('crypto');
 const post = require('./utils/post');
 
+function messageUsers(error, response, body) {
+  if (error) {
+    console.log(error);
+    return null;
+  }
+  const url = 'https://slack.com/api/chat.postMessage';
+  const content = JSON.parse(body);
+  const channel = content.group.id;
+  const text = "Test: You've been matched for lunch!";
+  const message = { token, channel, text };
+  message(url, message);
+}
+
 function notifyUsers(users) {
   const url = 'https://slack.com/api/mpim.open';
-  const token = config.SLACK_VERIFICATION_TOKEN;
   const message = { token, users };
-  post(url, message);
+  post(url, message, messageUsers);
 }
 
 function matchUsers(users, date) {
-  if (users.length === 0) {
+  if (users.length > 1) {
     return null;
   }
   let person1 = users[0].id;
@@ -67,7 +81,7 @@ function getUsers() {
 app.post('/slack/actions', urlencodedParser, (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
-  var content = JSON.parse(req.body.payload);
+  const content = JSON.parse(req.body.payload);
 
   const { token, team, channel, user, actions, response_url } = content;
   let action = actions[0];
@@ -85,8 +99,7 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
       success = {
         response_type: 'ephermal',
         text: `Awesome! Happy to have you on board.`,
-        replace_original: true,
-
+        replace_original: true
       };
       failure = {
         response_type: 'ephermal',
@@ -115,7 +128,6 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
     default:
       message = {
         response_type: 'ephermal',
-        response_type: 'in_channel',
         text: "This action hasn't been configured yet",
         replace_original: false
       };
@@ -184,14 +196,56 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
       };
       respond(response_url, message);
       break;
-      case 'lunchup':
-        message = {
-          response_type: 'in_channel',
-          text: "Matching the participants..."
-        };
-        respond(response_url, message);
-        getUsers();
-        break;
+    case 'lunchup':
+      message = {
+        response_type: 'in_channel',
+        text: 'Matching the participants...'
+      };
+      respond(response_url, message);
+      getUsers();
+      break;
+    default:
+      message = {
+        response_type: 'in_channel',
+        text: "This command hasn't been configured yet"
+      };
+      respond(response_url, message);
+  }
+});
+
+/*
+ * Events
+ */
+
+app.post('/slack/events', urlencodedParser, (req, res) => {
+  // Best practice to respond with empty 200 status code.
+  res.status(200).end();
+  const content = req.body;
+  const { response_url, event } = content;
+
+  if (!event) {
+    res.status(422).end('No event specified');
+  }
+
+  let message = {};
+
+  switch (event.type) {
+    case 'url_verification':
+      message = {
+        response_type: 'in_channel',
+        text:
+          'Would you like to be paired up for lunch with a random coworker every week?'
+      };
+      respond(response_url, message);
+      break;
+    case 'im_':
+      message = {
+        response_type: 'in_channel',
+        text: 'Matching the participants...'
+      };
+      respond(response_url, message);
+      getUsers();
+      break;
     default:
       message = {
         response_type: 'in_channel',
