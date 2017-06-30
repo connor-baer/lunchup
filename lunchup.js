@@ -30,7 +30,7 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
   let failure = {};
   let message = {};
 
-  switch (name) {
+  switch (action.name) {
     case 'optin':
       success = {
         text: `Awesome! Happy to have you on board.`,
