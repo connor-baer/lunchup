@@ -83,10 +83,13 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
   switch (action.name) {
     case 'optin':
       success = {
+        response_type: 'ephermal',
         text: `Awesome! Happy to have you on board.`,
-        replace_original: true
+        replace_original: true,
+
       };
       failure = {
+        response_type: 'ephermal',
         text: `You've already signed up!`,
         replace_original: true
       };
@@ -103,6 +106,7 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
       break;
     case 'optout':
       message = {
+        response_type: 'ephermal',
         text: `Too bad! Should you change your mind in the future, send me a message @lunchup.`,
         replace_original: true
       };
@@ -110,6 +114,7 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
       break;
     default:
       message = {
+        response_type: 'ephermal',
         response_type: 'in_channel',
         text: "This action hasn't been configured yet",
         replace_original: false
