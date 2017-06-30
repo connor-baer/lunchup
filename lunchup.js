@@ -141,7 +141,7 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
   let message = {};
 
   switch (name) {
-    case 'lunchup':
+    case 'lunch':
       message = {
         response_type: 'in_channel',
         attachments: [
@@ -179,7 +179,7 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
       };
       respond(response_url, message);
       break;
-      case 'lunch':
+      case 'lunchup':
         message = {
           response_type: 'in_channel',
           text: "Matching the participants..."
