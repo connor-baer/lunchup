@@ -7,42 +7,42 @@ var message = require('./utils/message');
 var app = express();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
+// TODO: Verify Slack token.
+
 /*
  * Actions
  */
 
 app.post('/slack/actions', urlencodedParser, (req, res) => {
+
+
+  // Best practice to respond with empty 200 status code.
+  res.status(200).end();
   const content = req.body;
-  if (content.token != config.SLACK_VERIFICATION_TOKEN) {
-    res.status(403).end('Access forbidden');
-  } else {
-    // Best practice to respond with empty 200 status code.
-    res.status(200).end();
-    const responseURL = content.response_url;
-    let action = content.actions[0];
+  const responseURL = content.response_url;
+  let action = content.actions[0];
 
-    if (!action) {
-      res.status(422).end('No action specified');
-    }
-
-    let name = action.name;
-
-    let message = {}
-
-    switch (name) {
-      case 'join':
-        message = {
-          text: `Awesome! Happy to have you on board.`
-        };
-        break;
-      default:
-        message = {
-          response_type: 'in_channel',
-          text: "This action hasn't been configured yet"
-        };
-    }
-    respond(responseURL, message);
+  if (!action) {
+    res.status(422).end('No action specified');
   }
+
+  let name = action.name;
+
+  let message = {}
+
+  switch (name) {
+    case 'join':
+      message = {
+        text: `Awesome! Happy to have you on board.`
+      };
+      break;
+    default:
+      message = {
+        response_type: 'in_channel',
+        text: "This action hasn't been configured yet"
+      };
+  }
+  respond(responseURL, message);
 });
 
 /*
@@ -50,73 +50,69 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
  */
 
 app.post('/slack/commands', urlencodedParser, (req, res) => {
+  // Best practice to respond with empty 200 status code.
+  res.status(200).end();
   const content = req.body;
-  if (content.token != config.SLACK_VERIFICATION_TOKEN) {
-    res.status(403).end('Access forbidden');
-  } else {
-    // Best practice to respond with empty 200 status code.
-    res.status(200).end();
-    const responseURL = content.response_url;
-    const command = content.command;
+  const responseURL = content.response_url;
+  const command = content.command;
 
-    if (!command) {
-      res.status(422).end('No command specified');
-    }
-
-    if (command[0] !== '/') {
-      res.status(422).end('Commands must start with /');
-    }
-
-    let name = command.substr(1);
-
-    let message = {}
-
-    switch (command) {
-      case 'lunch':
-        message = {
-          response_type: 'in_channel',
-          attachments: [
-            {
-              text:
-                '*Would you like to be paired up for lunch with a random coworker every week?*',
-              fallback: 'You are unable to participate.',
-              callback_id: 'wopr_game',
-              color: '#3388ff',
-              attachment_type: 'default',
-              actions: [
-                {
-                  name: 'join',
-                  text: 'Yes please!',
-                  style: 'primary',
-                  type: 'button',
-                  value: 'true'
-                },
-                {
-                  name: 'join',
-                  text: 'No thanks.',
-                  style: 'danger',
-                  type: 'button',
-                  value: 'false'
-                },
-                {
-                  name: 'join',
-                  text: 'Maybe later.',
-                  type: 'button',
-                  value: 'later'
-                }
-              ]
-            }
-          ]
-        };
-        break;
-      default:
-        message = {
-          response_type: 'in_channel',
-          text: "This command hasn't been configured yet"
-        };
-    }
-    respond(responseURL, message);
+  if (!command) {
+    res.status(422).end('No command specified');
   }
+
+  if (command[0] !== '/') {
+    res.status(422).end('Commands must start with /');
+  }
+
+  let name = command.substr(1);
+
+  let message = {}
+
+  switch (command) {
+    case 'lunch':
+      message = {
+        response_type: 'in_channel',
+        attachments: [
+          {
+            text:
+              '*Would you like to be paired up for lunch with a random coworker every week?*',
+            fallback: 'You are unable to participate.',
+            callback_id: 'wopr_game',
+            color: '#3388ff',
+            attachment_type: 'default',
+            actions: [
+              {
+                name: 'join',
+                text: 'Yes please!',
+                style: 'primary',
+                type: 'button',
+                value: 'true'
+              },
+              {
+                name: 'join',
+                text: 'No thanks.',
+                style: 'danger',
+                type: 'button',
+                value: 'false'
+              },
+              {
+                name: 'join',
+                text: 'Maybe later.',
+                type: 'button',
+                value: 'later'
+              }
+            ]
+          }
+        ]
+      };
+      break;
+    default:
+      message = {
+        response_type: 'in_channel',
+        text: "This command hasn't been configured yet"
+      };
+  }
+  respond(responseURL, message);
 });
 
 // app.post('/slack/actions', urlencodedParser, (req, res) => {
