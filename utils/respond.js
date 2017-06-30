@@ -1,6 +1,6 @@
 var request = require('request');
 
-module.export = (responseURL, JSONmessage) => {
+module.exports = (responseURL, JSONmessage) => {
   var postOptions = {
     uri: responseURL,
     method: 'POST',

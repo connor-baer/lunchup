@@ -13,9 +13,9 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
  * Actions
  */
 
+respond('https://connorbaer.co', { text: "Hello world" });
+
 app.post('/slack/actions', urlencodedParser, (req, res) => {
-
-
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
   const content = req.body;
