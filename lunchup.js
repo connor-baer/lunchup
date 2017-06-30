@@ -1,12 +1,64 @@
-var express = require('express');
-var request = require('request');
-var config = require('./config.json');
-var bodyParser = require('body-parser');
-var respond = require('./utils/respond');
-var message = require('./utils/message');
-var storage = require('./utils/storage');
-var app = express();
+const express = require('express');
+const request = require('request');
+const config = require('./config.json');
+const bodyParser = require('body-parser');
+const respond = require('./utils/respond');
+const message = require('./utils/message');
+const storage = require('./utils/storage');
+const app = express();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+const crypto = require('crypto');
+const post = require('./utils/post');
+
+function notifyUsers(users) {
+  const url = 'https://slack.com/api/mpim.open';
+  const token = config.SLACK_VERIFICATION_TOKEN;
+  const message = { token, users };
+  post(url, message);
+}
+
+function matchUsers(users, date) {
+  if (users.length === 0) {
+    return null;
+  }
+  let person1 = users[0].id;
+  let randomInt = Math.floor(Math.random() * (users.length - 1) + 1);
+  let person2 = users[randomInt].id;
+  let id = crypto.createHash('sha1').update(person1 + person2).digest('hex');
+
+  let match = { date: date, id: id, users: [person1, person2] };
+
+  storage
+    .addItem('matches', match)
+    .then(status => {
+      console.log(status);
+      users = users.filter(
+        value => value.id !== person1 && value.id !== person2
+      );
+      notifyUsers([person1, person2]);
+      matchUsers(users, date);
+    })
+    .catch(error => {
+      console.log(error);
+      matchUsers(users, date);
+    });
+}
+
+function getUsers() {
+  const data = storage.getData('users');
+
+  if (!data) {
+    return null;
+  }
+
+  let { users } = data;
+  let date = new Date();
+
+  matchUsers(users, date);
+}
+
+getUsers();
 
 // TODO: Verify Slack token.
 
@@ -76,8 +128,7 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
   const content = req.body;
-  const responseURL = content.response_url;
-  const command = content.command;
+  const { response_url, command } = content;
 
   if (!command) {
     res.status(422).end('No command specified');
@@ -92,7 +143,7 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
   let message = {};
 
   switch (name) {
-    case 'lunch':
+    case 'lunchup':
       message = {
         response_type: 'in_channel',
         attachments: [
@@ -128,14 +179,23 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
           }
         ]
       };
+      respond(response_url, message);
       break;
+      case 'lunch':
+        message = {
+          response_type: 'in_channel',
+          text: "Matching the participants..."
+        };
+        respond(response_url, message);
+        getUsers();
+        break;
     default:
       message = {
         response_type: 'in_channel',
         text: "This command hasn't been configured yet"
       };
+      respond(response_url, message);
   }
-  respond(responseURL, message);
 });
 
 app.get('/', function(req, res) {

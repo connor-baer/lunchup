@@ -39,15 +39,6 @@ module.exports = {
       reject("Item already exists.");
     })
   },
-  // addItem(fileName, item) {
-  //   const currentData = readStorage(fileName)[fileName];
-  //   const itemExists = currentData.find(value => value.id === item.id);
-  //   if (!itemExists) {
-  //     const withItem = _.concat(currentData, item);
-  //     const newData = { [fileName]: withItem };
-  //     writeStorage(fileName, newData);
-  //   }
-  // },
   removeItem(fileName, id) {
     const currentData = readStorage(fileName)[fileName];
     const itemExists = currentData.find(value => value.id === id);
