@@ -13,8 +13,6 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
  * Actions
  */
 
-respond('https://connorbaer.co', { text: "Hello world" });
-
 app.post('/slack/actions', urlencodedParser, (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
@@ -33,6 +31,7 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
   switch (name) {
     case 'join':
       message = {
+        response_type: 'in_channel',
         text: `Awesome! Happy to have you on board.`
       };
       break;
@@ -68,7 +67,7 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
 
   let message = {}
 
-  switch (command) {
+  switch (name) {
     case 'lunch':
       message = {
         response_type: 'in_channel',
