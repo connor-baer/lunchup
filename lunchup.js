@@ -4,6 +4,7 @@ var config = require('./config.json');
 var bodyParser = require('body-parser');
 var respond = require('./utils/respond');
 var message = require('./utils/message');
+var storage = require('./utils/storage');
 var app = express();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -17,31 +18,46 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
   var content = JSON.parse(req.body.payload);
-  const responseURL = content.response_url;
-  let action = content.actions[0];
+
+  const { token, team, channel, user, actions, response_url } = content;
+  let action = actions[0];
 
   if (!action) {
     res.status(422).end('No action specified');
   }
 
-  let name = action.name;
-
-  let message = {}
+  let success = {};
+  let failure = {};
 
   switch (name) {
-    case 'join':
-      message = {
+    case 'optin':
+      success = {
         text: `Awesome! Happy to have you on board.`,
-        "replace_original": true
+        replace_original: true
       };
+      failure = {
+        text: `You've already signed up!`,
+        replace_original: true
+      };
+      addItem('users', user)
+        .then(respond(response_url, success))
+        .catch(respond(response_url, failure));
+      break;
+    case 'optout':
+      message = {
+        text: `Too bad! Should you change your mind in the future, send me a message @lunchup.`,
+        replace_original: true
+      };
+      respond(response_url, message);
       break;
     default:
       message = {
         response_type: 'in_channel',
-        text: "This action hasn't been configured yet"
+        text: "This action hasn't been configured yet",
+        replace_original: false
       };
+      respond(response_url, message);
   }
-  respond(responseURL, message);
 });
 
 /*
@@ -65,7 +81,7 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
 
   let name = command.substr(1);
 
-  let message = {}
+  let message = {};
 
   switch (name) {
     case 'lunch':
@@ -74,28 +90,28 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
         attachments: [
           {
             text:
-              '*Would you like to be paired up for lunch with a random coworker every week?*',
+              'Would you like to be paired up for lunch with a random coworker every week?',
             fallback: 'You are unable to participate.',
             callback_id: 'wopr_game',
             color: '#3388ff',
             attachment_type: 'default',
             actions: [
               {
-                name: 'join',
+                name: 'optin',
                 text: 'Yes please!',
                 style: 'primary',
                 type: 'button',
                 value: 'true'
               },
               {
-                name: 'join',
+                name: 'optout',
                 text: 'No thanks.',
                 style: 'danger',
                 type: 'button',
                 value: 'false'
               },
               {
-                name: 'join',
+                name: 'later',
                 text: 'Maybe later.',
                 type: 'button',
                 value: 'later'
@@ -113,20 +129,6 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
   }
   respond(responseURL, message);
 });
-
-// app.post('/slack/actions', urlencodedParser, (req, res) => {
-//   res.status(200).end(); // best practice to respond with 200 status
-//   var actionJSONPayload = JSON.parse(req.body.payload); // parse URL-encoded payload JSON string
-//   var message = {
-//     text:
-//       actionJSONPayload.user.name +
-//       ' clicked: ' +
-//       actionJSONPayload.actions[0].name,
-//     replace_original: false
-//   };
-//   sendMessageToSlackResponseURL(actionJSONPayload.response_url, message);
-// });
-
 
 app.get('/', function(req, res) {
   res.send('Hello World!');

@@ -1,5 +1,6 @@
-# Config
+# Project specific
 config.json
+storage/*
 
 # Logs
 logs

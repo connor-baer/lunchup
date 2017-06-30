@@ -1,7 +1,7 @@
 var request = require('request');
 
 module.exports = (responseURL, JSONmessage) => {
-  var postOptions = {
+  const postOptions = {
     uri: responseURL,
     method: 'POST',
     headers: {
@@ -9,9 +9,10 @@ module.exports = (responseURL, JSONmessage) => {
     },
     json: JSONmessage
   };
+
   request(postOptions, (error, response, body) => {
     if (error) {
-      // handle errors as you see fit
+      // TODO: Handle errors.
     }
   });
 }
