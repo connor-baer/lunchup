@@ -50,12 +50,12 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
  */
 
 app.post('/slack/commands', urlencodedParser, (req, res) => {
+  const content = req.body;
   if (content.token != config.SLACK_VERIFICATION_TOKEN) {
     res.status(403).end('Access forbidden');
   } else {
     // Best practice to respond with empty 200 status code.
     res.status(200).end();
-    const content = req.body;
     const responseURL = content.response_url;
     const command = content.command;
 
