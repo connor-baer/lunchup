@@ -58,8 +58,6 @@ function getUsers() {
   matchUsers(users, date);
 }
 
-getUsers();
-
 // TODO: Verify Slack token.
 
 /*
