@@ -16,7 +16,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.post('/slack/actions', urlencodedParser, (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
-  const content = req.body;
+  var content = JSON.parse(req.body.payload);
   const responseURL = content.response_url;
   let action = content.actions[0];
 
@@ -31,8 +31,8 @@ app.post('/slack/actions', urlencodedParser, (req, res) => {
   switch (name) {
     case 'join':
       message = {
-        response_type: 'in_channel',
-        text: `Awesome! Happy to have you on board.`
+        text: `Awesome! Happy to have you on board.`,
+        "replace_original": true
       };
       break;
     default:
