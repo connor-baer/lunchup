@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const request = require('request');
 const config = require('./config.json');
@@ -16,7 +18,7 @@ const post = require('./utils/post');
 function messageUsers(error, response, body) {
   if (error) {
     console.log(error);
-    return null;
+    return;
   }
   const url = 'https://slack.com/api/chat.postMessage';
   const content = JSON.parse(body);
@@ -27,14 +29,16 @@ function messageUsers(error, response, body) {
 }
 
 function notifyUsers(users) {
-  const url = 'https://slack.com/api/mpim.open';
-  const message = { token, users };
-  post(url, message, messageUsers);
+  return new Promise((resolve, reject) => {
+    const url = 'https://slack.com/api/mpim.open';
+    const message = { token, users };
+    post(url, message, messageUsers);
+  });
 }
 
 function matchUsers(users, date) {
-  if (users.length > 1) {
-    return null;
+  if (users.length < 1) {
+    return;
   }
   let person1 = users[0].id;
   let randomInt = Math.floor(Math.random() * (users.length - 1) + 1);
@@ -50,8 +54,9 @@ function matchUsers(users, date) {
       users = users.filter(
         value => value.id !== person1 && value.id !== person2
       );
-      notifyUsers([person1, person2]);
-      matchUsers(users, date);
+      notifyUsers([person1, person2])
+        .then(status => matchUsers(users, date))
+        .catch(error => console.log(error));
     })
     .catch(error => {
       console.log(error);
@@ -63,14 +68,17 @@ function getUsers() {
   const data = storage.getData('users');
 
   if (!data) {
-    return null;
+    return;
   }
 
   let { users } = data;
   let date = new Date();
+  console.log('getUsers');
 
   matchUsers(users, date);
 }
+
+// getUsers();
 
 // TODO: Verify Slack token.
 
@@ -147,10 +155,12 @@ app.post('/slack/commands', urlencodedParser, (req, res) => {
 
   if (!command) {
     res.status(422).end('No command specified');
+    return;
   }
 
   if (command[0] !== '/') {
     res.status(422).end('Commands must start with /');
+    return;
   }
 
   let name = command.substr(1);
@@ -225,6 +235,7 @@ app.post('/slack/events', urlencodedParser, (req, res) => {
 
   if (!event) {
     res.status(422).end('No event specified');
+    return;
   }
 
   let message = {};
@@ -249,16 +260,16 @@ app.post('/slack/events', urlencodedParser, (req, res) => {
     default:
       message = {
         response_type: 'in_channel',
-        text: "This command hasn't been configured yet"
+        text: "This command hasn't been configured yet."
       };
       respond(response_url, message);
   }
 });
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.listen(8080, function() {
+app.listen(8080, () => {
   console.log('LunchUp listening on port 8080.');
 });
