@@ -7,7 +7,6 @@ const express = require('express');
 const request = require('request');
 const app = express();
 
-const lunchup = require('./lib/lunchup');
 const storage = require('./utils/storage');
 
 const config = require('./storage/config.json').config;
@@ -18,6 +17,21 @@ const {
   SLACK_OAUTH_SCOPE,
   SLACK_REDIRECT
 } = config;
+
+const RtmClient = require('@slack/client').RtmClient;
+const MemoryDataStore = require('@slack/client').MemoryDataStore;
+const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+
+function lunchup (SLACK_BOT_TOKEN) {
+  const rtm = new RtmClient(SLACK_BOT_TOKEN);
+
+  // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload if you want to cache it
+  rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
+    winston.info('Logged in as ' + rtmStartData.self.name + ' of team ' + rtmStartData.team.name + ', but not yet connected to a channel.');
+  });
+
+  rtm.start();
+}
 
 
 app.get('/', (req, res) => {
