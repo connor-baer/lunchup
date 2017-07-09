@@ -7,7 +7,7 @@ const express = require('express');
 const request = require('request');
 const app = express();
 
-const lunchup = require('./lib/lunchup');
+// const lunchup = require('./lib/lunchup');
 const storage = require('./utils/storage');
 
 const config = require('./storage/config.json').config;
@@ -125,7 +125,7 @@ app.get('/api/auth', (req, res) => {
           access_token: auth.access_token
         }
 
-        lunchup(team.bot.bot_access_token);
+        // lunchup(team.bot.bot_access_token);
 
         storage
           .addItem(team.id, team)
