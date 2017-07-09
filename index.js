@@ -86,6 +86,7 @@ app.get('/api/auth', (req, res) => {
             return callback(new Error(auth.error));
           }
 
+          winston.info(path + ' ' + auth);
           callback(null, auth);
 
         });
@@ -102,18 +103,12 @@ app.get('/api/auth', (req, res) => {
             return callback(error);
           }
 
+          let identity;
+
           try {
             identity = JSON.parse(body);
 
-            let team = {
-              id: identity.team_id,
-              identity: identity,
-              auth: auth,
-              createdBy: identity.user_id,
-              url: identity.url,
-              name: identity.team
-            };
-
+            winston.info(path + ' ' + identity);
             return callback(null, identity);
           } catch(e) {
             return callback(e);
@@ -128,7 +123,7 @@ app.get('/api/auth', (req, res) => {
         let identity = (results || {}).identity || {};
         let scopes = auth.scope.split(/\,/);
 
-        team = {
+        let team = {
           id: identity.team_id,
           identity: identity,
           bot: auth.bot,
@@ -139,15 +134,24 @@ app.get('/api/auth', (req, res) => {
           access_token: auth.access_token
         }
 
+        storage
+          .addItem(team.id, team)
+          .then(status => {
+            winston.info(status);
+            return callback(null, team);
+          })
+          .catch(error => {
+            return callback(error);
+          });
       }]
     },
     (err, results) => {
-      if (err) return ejs.renderFile(template, {
+      if (err) return ejs.renderFile(authTemplate, {
         message: 'Failure',
         content: err && err.message
       }, {}, (err, response) => callback(err, new Buffer(response || ''), {'Content-Type': 'text/html'}));
 
-      ejs.renderFile(template, {
+      ejs.renderFile(authTemplate, {
         message: 'Success!',
         content: 'You can now invite the bot to your channels and use it!'
       }, {}, (err, response) => callback(err, new Buffer(response || ''), {'Content-Type': 'text/html'}));
