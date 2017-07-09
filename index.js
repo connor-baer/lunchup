@@ -55,7 +55,7 @@ app.get('/api/auth', (req, res) => {
     res.send(authHtml);
   }
 
-  const authHtml = async.auto(
+  async.auto(
     {
       auth: (callback) => {
         // Post code, app ID, and app secret, to get token.
@@ -146,19 +146,21 @@ app.get('/api/auth', (req, res) => {
       }]
     },
     (err, results) => {
-      if (err) return ejs.renderFile(authTemplate, {
-        message: 'Failure',
-        content: err && err.message
-      }, {}, (err, response) => callback(err, new Buffer(response || ''), {'Content-Type': 'text/html'}));
+      if (err) {
+        const authHtml = ejs.renderFile(authTemplate, {
+          message: 'Failure',
+          content: err && err.message
+        }, {}, (error, html) => html || error);
+        res.send(authHtml);
+      }
 
-      ejs.renderFile(authTemplate, {
+      const authHtml = ejs.renderFile(authTemplate, {
         message: 'Success!',
         content: 'You can now invite the bot to your channels and use it!'
-      }, {}, (err, response) => callback(err, new Buffer(response || ''), {'Content-Type': 'text/html'}));
+      }, {}, (error, html) => html || error);
+      res.send(authHtml);
     }
   );
-
-  res.send(authHtml);
 });
 
 
