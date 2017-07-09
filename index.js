@@ -55,7 +55,7 @@ app.get('/api/auth', (req, res) => {
     res.send(authHtml);
   }
 
-  async.auto(
+  const authHtml = async.auto(
     {
       auth: (callback) => {
         // Post code, app ID, and app secret, to get token.
@@ -158,6 +158,7 @@ app.get('/api/auth', (req, res) => {
     }
   );
 
+  res.send(authHtml);
 });
 
 
