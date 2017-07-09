@@ -41,7 +41,7 @@ function lunchup (SLACK_BOT_TOKEN) {
   });
 
   rtm.on(RTM_EVENTS.MESSAGE, (message) => {
-    winston.log('Message:' + JSON.stringify(message));
+    winston.info('Message:' + JSON.stringify(message));
   });
 
   rtm.start();
