@@ -52,7 +52,7 @@ app.get('/auth', (req, res) => {
     res.send(authHtml);
   }
 
-  const callback = (content) => winston.info(content);
+  const callback = (content) => winston.info(JSON.stringify(content));
 
   async.auto(
     {
