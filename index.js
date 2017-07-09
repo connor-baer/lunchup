@@ -38,9 +38,8 @@ app.get('/', (req, res) => {
 
 app.get('/api/auth', (req, res) => {
   winston.info('Requested /api/auth');
-  winston.info(req.body);
 
-  const { code, error } = req.body;
+  const { code, error } = req.query;
   const authTemplate = __dirname + '/pages/api/auth.ejs';
 
   if (!code) {
