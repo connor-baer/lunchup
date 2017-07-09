@@ -57,7 +57,7 @@ app.get('/api/auth', (req, res) => {
 
   async.auto(
     {
-      auth: () => {
+      auth: (callback) => {
         // Post code, app ID, and app secret, to get token.
         let authAddress = 'https://slack.com/api/oauth.access?'
         authAddress += 'client_id=' + SLACK_CLIENT_ID
@@ -69,7 +69,7 @@ app.get('/api/auth', (req, res) => {
 
           if (error) {
             winston.log('error', path + ' Error in auth.');
-            return null;
+            return callback(error);
           }
 
           let auth;
@@ -78,15 +78,15 @@ app.get('/api/auth', (req, res) => {
             auth = JSON.parse(body);
           } catch(e) {
             winston.log('error', path + ' Could not parse auth.');
-            return;
+            return callback(new Error('Could not parse auth.'));
           }
 
           if (!auth.ok) {
             winston.log('error', path + ' ' + auth.error);
-            return;
+            return callback(new Error(auth.error));
           }
 
-          winston.info(auth);
+          callback(null, auth);
 
         });
       },
