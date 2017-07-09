@@ -1,4 +1,3 @@
-
 const winston = require('winston');
 winston.add(winston.transports.File, { filename: 'node.log' });
 
@@ -8,21 +7,16 @@ const express = require('express');
 const request = require('request');
 const app = express();
 
-const RtmClient = require('@slack/client').RtmClient;
-const MemoryDataStore = require('@slack/client').MemoryDataStore;
-const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
-
+const lunchup = require('./lib/lunchup');
 const storage = require('./utils/storage');
 
 const config = require('./storage/config.json').config;
 const {
-  SLACK_APP_NAME,
   SLACK_CLIENT_ID,
   SLACK_CLIENT_SECRET,
   SLACK_VERIFICATION_TOKEN,
   SLACK_OAUTH_SCOPE,
-  SLACK_REDIRECT,
-  SLACK_BOT_TOKEN
+  SLACK_REDIRECT
 } = config;
 
 
@@ -41,11 +35,10 @@ app.get('/api/auth', (req, res) => {
   winston.info('Requested ' + path);
 
   const { code, error } = req.query;
-  winston.info(code);
   const authTemplate = __dirname + '/pages/api/auth.ejs';
 
   if (!code) {
-    winston.info(path + ' No code provided.');
+    winston.log('error', path + ' No code provided.');
 
     const authHtml = ejs.renderFile(authTemplate, {
       message: 'Failure',
@@ -86,7 +79,6 @@ app.get('/api/auth', (req, res) => {
             return callback(new Error(auth.error));
           }
 
-          winston.info(path + ' ' + auth);
           callback(null, auth);
 
         });
@@ -108,7 +100,6 @@ app.get('/api/auth', (req, res) => {
           try {
             identity = JSON.parse(body);
 
-            winston.info(path + ' ' + identity);
             return callback(null, identity);
           } catch(e) {
             return callback(e);
@@ -134,10 +125,11 @@ app.get('/api/auth', (req, res) => {
           access_token: auth.access_token
         }
 
+        lunchup(team.bot.bot_access_token);
+
         storage
           .addItem(team.id, team)
           .then(status => {
-            winston.info(status);
             return callback(null, team);
           })
           .catch(error => {
