@@ -36,12 +36,12 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/auth', (req, res) => {
-  winston.info('Requested /auth');
+app.get('/api/auth', (req, res) => {
+  winston.info('Requested /api/auth');
   winston.info(req.body);
 
   const { code, error } = req.body;
-  const authTemplate = __dirname + '/pages/auth.ejs';
+  const authTemplate = __dirname + '/pages/api/auth.ejs';
 
   if (!code) {
     const authHtml = ejs.renderFile(authTemplate, {
