@@ -40,7 +40,7 @@ function lunchup (SLACK_BOT_TOKEN) {
     rtm.sendMessage("Hello!", channel);
   });
 
-  rtm.on(RTM_EVENTS.MESSAGE, (message) => {
+  rtm.on(CLIENT_EVENTS.RTM.MESSAGE, (message) => {
     winston.info('Message:' + JSON.stringify(message));
   });
 
