@@ -187,9 +187,9 @@ app.get('/api/auth', (req, res) => {
 app.get('/api/events', (req, res) => {
   const path = '/api/events';
   winston.info('Requested ' + path);
-  winston.info(req.body.challenge);
+  winston.info(req.params.challenge);
 
-  res.send(req.body.challenge);
+  res.send(req.params.challenge);
 });
 
 
