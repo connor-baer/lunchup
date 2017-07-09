@@ -37,12 +37,16 @@ app.get('/', (req, res) => {
 
 
 app.get('/api/auth', (req, res) => {
-  winston.info('Requested /api/auth');
+  const path = '/api/auth';
+  winston.info('Requested ' + path);
 
   const { code, error } = req.query;
+  winston.info(code);
   const authTemplate = __dirname + '/pages/api/auth.ejs';
 
   if (!code) {
+    winston.info(path + ' No code provided.');
+
     const authHtml = ejs.renderFile(authTemplate, {
       message: 'Failure',
       content: error || 'No auth code given. Try again?'
@@ -51,11 +55,9 @@ app.get('/api/auth', (req, res) => {
     res.send(authHtml);
   }
 
-  const callback = (content) => winston.info(JSON.stringify(content));
-
   async.auto(
     {
-      auth: (callback) => {
+      auth: () => {
         // Post code, app ID, and app secret, to get token.
         let authAddress = 'https://slack.com/api/oauth.access?'
         authAddress += 'client_id=' + SLACK_CLIENT_ID
@@ -66,7 +68,8 @@ app.get('/api/auth', (req, res) => {
         request.get(authAddress, function (error, response, body) {
 
           if (error) {
-            return callback(error);
+            winston.log('error', path + ' Error in auth.');
+            return null;
           }
 
           let auth;
@@ -74,14 +77,16 @@ app.get('/api/auth', (req, res) => {
           try {
             auth = JSON.parse(body);
           } catch(e) {
-            return callback(new Error('Could not parse auth'));
+            winston.log('error', path + ' Could not parse auth.');
+            return;
           }
 
           if (!auth.ok) {
-            return callback(new Error(auth.error));
+            winston.log('error', path + ' ' + auth.error);
+            return;
           }
 
-          callback(null, auth);
+          winston.info(auth);
 
         });
       },
