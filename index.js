@@ -184,6 +184,14 @@ app.get('/api/auth', (req, res) => {
 });
 
 
+app.get('/api/events', (req, res) => {
+  const path = '/api/events';
+  winston.info('Requested ' + path);
+
+  res.send({challenge: req.body.challenge});
+});
+
+
 app.listen(8080, () => {
   winston.info('Listening on port 8080...');
 });
