@@ -6,11 +6,20 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 
+const { getTeams } = require('./lib/db');
+const lunchup = require('./lib/lunchup');
+
 const index = require('./routes/index');
 const auth = require('./routes/api/auth');
 const events = require('./routes/api/events');
 const commands = require('./routes/api/commands');
 const actions = require('./routes/api/actions');
+
+const teams = getTeams();
+teams.forEach(team => {
+  const botToken = team.sys.bot.bot_access_token;
+  lunchup(botToken);
+});
 
 const app = express();
 

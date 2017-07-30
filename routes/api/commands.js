@@ -1,6 +1,6 @@
 const winston = require('winston');
 const express = require('express');
-const respond = require('../../lib/message');
+const sendMessage = require('../../lib/send-message');
 const config = require('../../config.json').config;
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -88,7 +88,7 @@ router.post('/', (req, res) => {
       };
   }
 
-  respond(response_url, message);
+  sendMessage(response_url, message);
 });
 
 module.exports = router;
