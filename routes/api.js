@@ -129,7 +129,7 @@ router.get('/auth', (req, res) => {
   );
 });
 
-router.get('/events', (req, res) => {
+router.post('/events', (req, res) => {
   const path = '/api/events';
   const { token, challenge } = req.body;
   winston.info(`Requested ${path}`);
