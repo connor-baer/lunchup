@@ -8,7 +8,10 @@ const bodyParser = require('body-parser');
 const db = require('./lib/db');
 
 const index = require('./routes/index');
-const api = require('./routes/api');
+const auth = require('./routes/api/auth');
+const events = require('./routes/api/events');
+const commands = require('./routes/api/commands');
+const actions = require('./routes/api/actions');
 
 const app = express();
 
@@ -21,7 +24,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/api', api);
+app.use('/api/auth', auth);
+app.use('/api/events', events);
+app.use('/api/commands', commands);
+app.use('/api/actions', actions);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

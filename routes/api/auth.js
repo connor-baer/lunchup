@@ -2,9 +2,9 @@ const winston = require('winston');
 const express = require('express');
 const request = require('request');
 const async = require('async');
-const db = require('../lib/db');
-const lunchup = require('../lib/rtm');
-const config = require('../config.json').config;
+const { addTeam } = require('../../lib/db');
+const lunchup = require('../../lib/lunchup');
+const config = require('../../config.json').config;
 const {
   SLACK_CLIENT_ID,
   SLACK_CLIENT_SECRET,
@@ -16,9 +16,9 @@ const {
 const router = express.Router();
 
 /* GET authentication */
-router.get('/auth', (req, res) => {
+router.get('/', (req, res) => {
   const path = '/api/auth';
-  winston.info('Requested ' + path);
+  winston.info(`Requested ${path}`);
 
   const { code, error } = req.query;
 
@@ -106,7 +106,7 @@ router.get('/auth', (req, res) => {
           access_token: auth.access_token
         }
 
-        db.addTeam(team.id, team);
+        addTeam(team.id, team);
 
         lunchup(team.bot.bot_access_token);
 
@@ -127,19 +127,6 @@ router.get('/auth', (req, res) => {
       });
     }
   );
-});
-
-router.post('/events', (req, res) => {
-  const path = '/api/events';
-  const { token, challenge } = req.body;
-  winston.info(`Requested ${path}`);
-  winston.info(`Challenge: ${challenge}`);
-
-  if (token === SLACK_VERIFICATION_TOKEN) {
-    res.json({ challenge });
-    return;
-  }
-  res.status(401).send();
 });
 
 module.exports = router;
