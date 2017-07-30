@@ -131,10 +131,15 @@ router.get('/auth', (req, res) => {
 
 router.get('/events', (req, res) => {
   const path = '/api/events';
-  winston.info('Requested ' + path);
-  winston.info(req.params.challenge);
+  const { token, challenge } = req.body;
+  winston.info(`Requested ${path}`);
+  winston.info(`Challenge: ${challenge}`);
 
-  res.status(200).json({ "challenge": req.params.challenge });
+  if (token === SLACK_VERIFICATION_TOKEN) {
+    res.json({ challenge });
+    return;
+  }
+  res.status(401).send();
 });
 
 module.exports = router;
