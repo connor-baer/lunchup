@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js --ignore 'storage/*'",
+    "start": "nodemon index.js --ignore 'data/*'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,12 +20,16 @@
   "dependencies": {
     "@slack/client": "^3.10.0",
     "async": "^2.5.0",
+    "body-parser": "^1.17.2",
     "cron": "^1.2.1",
+    "cryptr": "^2.0.0",
     "ejs": "^2.5.6",
     "express": "^4.15.3",
     "fs": "0.0.1-security",
     "lodash": "^4.17.4",
+    "lowdb": "^0.16.2",
     "request": "^2.81.0",
+    "twig": "^1.10.5",
     "winston": "^2.3.1"
   },
   "devDependencies": {

@@ -1,198 +1,48 @@
 const winston = require('winston');
 winston.add(winston.transports.File, { filename: 'node.log' });
 
-const ejs = require('ejs');
-const async = require('async');
 const express = require('express');
-const request = require('request');
+const path = require('path');
+const bodyParser = require('body-parser');
+
+const db = require('./lib/db');
+
+const index = require('./routes/index');
+const api = require('./routes/api');
+
 const app = express();
 
-const storage = require('./utils/storage');
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'twig');
 
-const config = require('./storage/config.json').config;
-const {
-  SLACK_CLIENT_ID,
-  SLACK_CLIENT_SECRET,
-  SLACK_VERIFICATION_TOKEN,
-  SLACK_OAUTH_SCOPE,
-  SLACK_REDIRECT
-} = config;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-const RtmClient = require('@slack/client').RtmClient;
-const MemoryDataStore = require('@slack/client').MemoryDataStore;
-const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+app.use('/', index);
+app.use('/api', api);
 
-function lunchup (SLACK_BOT_TOKEN) {
-  const rtm = new RtmClient(SLACK_BOT_TOKEN);
-
-  let channel;
-
-  // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
-  rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
-    for (const c of rtmStartData.channels) {
-      if (c.is_member && c.name ==='general') { channel = c.id }
-    }
-    winston.info('Logged in as ' + rtmStartData.self.name + ' of team ' + rtmStartData.team.name + ', but not yet connected to a channel.');
-  });
-
-  // you need to wait for the client to fully connect before you can send messages
-  rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function () {
-    rtm.sendMessage("Hello!", channel);
-  });
-
-  rtm.on(CLIENT_EVENTS.RTM.MESSAGE, (message) => {
-    winston.info('Message:' + JSON.stringify(message));
-  });
-
-  rtm.start();
-}
-
-
-app.get('/', (req, res) => {
-  winston.info('Requested /');
-
-  const indexTemplate = __dirname + '/pages/index.ejs';
-  const indexHtml = ejs.renderFile(indexTemplate, config, {}, (error, html) => html || error);
-
-  res.send(indexHtml);
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
+// error handler
+app.use((err, req, res) => {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-app.get('/api/auth', (req, res) => {
-  const path = '/api/auth';
-  winston.info('Requested ' + path);
-
-  const { code, error } = req.query;
-  const authTemplate = __dirname + '/pages/api/auth.ejs';
-
-  if (!code) {
-    winston.log('error', path + ' No code provided.');
-
-    const authHtml = ejs.renderFile(authTemplate, {
-      message: 'Failure',
-      content: error || 'No auth code given. Try again?'
-    }, {}, (error, html) => html || error);
-
-    res.send(authHtml);
-  }
-
-  async.auto(
-    {
-      auth: (callback) => {
-        // Post code, app ID, and app secret, to get token.
-        let authAddress = 'https://slack.com/api/oauth.access?'
-        authAddress += 'client_id=' + SLACK_CLIENT_ID
-        authAddress += '&client_secret=' + SLACK_CLIENT_SECRET
-        authAddress += '&code=' + code
-        authAddress += '&redirect_uri=' + SLACK_REDIRECT;
-
-        request.get(authAddress, function (error, response, body) {
-
-          if (error) {
-            winston.log('error', path + ' Error in auth.');
-            return callback(error);
-          }
-
-          let auth;
-
-          try {
-            auth = JSON.parse(body);
-          } catch(e) {
-            winston.log('error', path + ' Could not parse auth.');
-            return callback(new Error('Could not parse auth.'));
-          }
-
-          if (!auth.ok) {
-            winston.log('error', path + ' ' + auth.error);
-            return callback(new Error(auth.error));
-          }
-
-          callback(null, auth);
-
-        });
-      },
-      identity: ['auth', (results, callback) => {
-
-        let auth = (results || {}).auth || {};
-        let url = 'https://slack.com/api/auth.test?'
-        url += 'token=' + auth.access_token
-
-        request.get(url, (error, response, body) => {
-
-          if (error) {
-            return callback(error);
-          }
-
-          let identity;
-
-          try {
-            identity = JSON.parse(body);
-
-            return callback(null, identity);
-          } catch(e) {
-            return callback(e);
-          }
-
-        });
-
-      }],
-      team: ['identity', (results, callback) => {
-
-        let auth = (results || {}).auth || {};
-        let identity = (results || {}).identity || {};
-        let scopes = auth.scope.split(/\,/);
-
-        let team = {
-          id: identity.team_id,
-          identity: identity,
-          bot: auth.bot,
-          auth: auth,
-          createdBy: identity.user_id,
-          url: identity.url,
-          name: identity.team,
-          access_token: auth.access_token
-        }
-
-        lunchup(team.bot.bot_access_token);
-
-        storage
-          .addItem(team.id, team)
-          .then(status => {
-            return callback(null, team);
-          })
-          .catch(error => {
-            return callback(error);
-          });
-      }]
-    },
-    (err, results) => {
-      if (err) {
-        const authHtml = ejs.renderFile(authTemplate, {
-          message: 'Failure',
-          content: err && err.message
-        }, {}, (error, html) => html || error);
-        res.send(authHtml);
-      }
-
-      const authHtml = ejs.renderFile(authTemplate, {
-        message: 'Success!',
-        content: 'You can now invite the bot to your channels and use it!'
-      }, {}, (error, html) => html || error);
-      res.send(authHtml);
-    }
-  );
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
-
-
-app.get('/api/events', (req, res) => {
-  const path = '/api/events';
-  winston.info('Requested ' + path);
-  winston.info(req.params.challenge);
-
-  res.send(req.params.challenge);
-});
-
 
 app.listen(8080, () => {
   winston.info('Listening on port 8080...');
 });
+
+module.exports = app;
