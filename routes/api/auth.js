@@ -5,11 +5,10 @@ const async = require('async');
 const { addTeam } = require('../../lib/db');
 const lunchup = require('../../lib/lunchup');
 const config = require('../../config.json').config;
+
 const {
   SLACK_CLIENT_ID,
   SLACK_CLIENT_SECRET,
-  SLACK_VERIFICATION_TOKEN,
-  SLACK_OAUTH_SCOPE,
   SLACK_REDIRECT
 } = config;
 
@@ -23,7 +22,7 @@ router.get('/', (req, res) => {
   const { code, error } = req.query;
 
   if (!code) {
-    winston.log('error', path + ' No code provided.');
+    winston.log('error', 'No code provided.');
 
     res.render('api/auth', {
       message: 'Failure',
@@ -35,46 +34,44 @@ router.get('/', (req, res) => {
     {
       auth: (callback) => {
         // Post code, app ID, and app secret, to get token.
-        let authAddress = 'https://slack.com/api/oauth.access?'
-        authAddress += 'client_id=' + SLACK_CLIENT_ID
-        authAddress += '&client_secret=' + SLACK_CLIENT_SECRET
-        authAddress += '&code=' + code
-        authAddress += '&redirect_uri=' + SLACK_REDIRECT;
+        let authAddress = 'https://slack.com/api/oauth.access?';
+        authAddress += `client_id=${SLACK_CLIENT_ID}`;
+        authAddress += `&client_secret=${SLACK_CLIENT_SECRET}`;
+        authAddress += `&code=${code}`;
+        authAddress += `&redirect_uri=${SLACK_REDIRECT}`;
 
-        request.get(authAddress, (error, response, body) => {
+        request.get(authAddress, (err, response, body) => {
 
-          if (error) {
-            winston.log('error', path + ' Error in auth.');
-            return callback(error);
+          if (err) {
+            winston.log('error', 'Error in auth.');
+            return callback(err);
           }
 
           let auth;
 
           try {
             auth = JSON.parse(body);
-          } catch(e) {
-            winston.log('error', path + ' Could not parse auth.');
+          } catch (e) {
+            winston.log('error', 'Could not parse auth.');
             return callback(new Error('Could not parse auth.'));
           }
 
           if (!auth.ok) {
-            winston.log('error', path + ' ' + auth.error);
+            winston.log('error', auth.error);
             return callback(new Error(auth.error));
           }
 
-          callback(null, auth);
+          return callback(null, auth);
         });
       },
       identity: ['auth', (results, callback) => {
+        const auth = (results || {}).auth || {};
+        let url = 'https://slack.com/api/auth.test?';
+        url += `token=${auth.access_token}`;
 
-        let auth = (results || {}).auth || {};
-        let url = 'https://slack.com/api/auth.test?'
-        url += 'token=' + auth.access_token
-
-        request.get(url, (error, response, body) => {
-
-          if (error) {
-            return callback(error);
+        request.get(url, (err, response, body) => {
+          if (err) {
+            return callback(err);
           }
 
           let identity;
@@ -83,28 +80,25 @@ router.get('/', (req, res) => {
             identity = JSON.parse(body);
 
             return callback(null, identity);
-          } catch(e) {
+          } catch (e) {
             return callback(e);
           }
         });
-
       }],
       team: ['identity', (results, callback) => {
+        const auth = (results || {}).auth || {};
+        const identity = (results || {}).identity || {};
 
-        let auth = (results || {}).auth || {};
-        let identity = (results || {}).identity || {};
-        let scopes = auth.scope.split(/\,/);
-
-        let team = {
+        const team = {
           id: identity.team_id,
-          identity: identity,
+          identity,
           bot: auth.bot,
-          auth: auth,
+          auth,
           createdBy: identity.user_id,
           url: identity.url,
           name: identity.team,
           access_token: auth.access_token
-        }
+        };
 
         addTeam(team.id, team);
 

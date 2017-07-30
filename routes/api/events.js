@@ -1,11 +1,12 @@
 const winston = require('winston');
 const express = require('express');
 const config = require('../../config.json').config;
+
 const { SLACK_VERIFICATION_TOKEN } = config;
 
 const router = express.Router();
 
-/* GET events challenge authentication */
+/* Post events challenge */
 router.post('/', (req, res) => {
   const path = '/api/events';
   winston.info(`Requested ${path}`);

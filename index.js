@@ -1,11 +1,10 @@
 const winston = require('winston');
+
 winston.add(winston.transports.File, { filename: 'node.log' });
 
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-
-const db = require('./lib/db');
 
 const index = require('./routes/index');
 const auth = require('./routes/api/auth');

@@ -1,15 +1,13 @@
 const winston = require('winston');
 const express = require('express');
-const request = require('request');
-const respond = require('../../lib/respond');
-const message = require('../../lib/message');
-const db = require('../../lib/db');
+const respond = require('../../lib/message');
 const config = require('../../config.json').config;
+
 const { SLACK_VERIFICATION_TOKEN } = config;
 
 const router = express.Router();
 
-/* GET commands */
+/* POST commands */
 router.post('/', (req, res) => {
   const path = '/api/commands';
   winston.info(`Requested ${path}`);
@@ -32,7 +30,9 @@ router.post('/', (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
 
-  let name = command.substr(1);
+  const name = command.substr(1);
+
+  winston.info(`Command: ${name}`);
 
   let message = {};
 

@@ -1,27 +1,27 @@
 const winston = require('winston');
 const express = require('express');
-const respond = require('../../lib/respond');
-const message = require('../../lib/message');
+const respond = require('../../lib/message');
 const { addUser } = require('../../lib/db');
 const config = require('../../config.json').config;
+
 const { SLACK_VERIFICATION_TOKEN } = config;
 
 const router = express.Router();
 
-/* GET actions */
+/* POST actions */
 router.post('/', (req, res) => {
   const path = '/api/actions';
   winston.info(`Requested ${path}`);
 
   const content = JSON.parse(req.body.payload);
-  const { token, team, channel, user, actions, response_url } = content;
+  const { token, team, user, actions, response_url } = content;
 
   if (token !== SLACK_VERIFICATION_TOKEN) {
     res.status(401).end('Unauthorized');
     return;
   }
 
-  let action = actions[0];
+  const action = actions[0];
 
   if (!action) {
     res.status(422).end('No action specified');
@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
       };
   }
 
-  respond(response_url, success);
+  respond(response_url, message);
 });
 
 module.exports = router;
