@@ -1,6 +1,8 @@
 const winston = require('winston');
 const express = require('express');
-const sendMessage = require('../../lib/send-message');
+const { sendResponse } = require('../../lib/interactions');
+const { getUsers } = require('../../lib/db');
+const { matchUsers } = require('../../lib/lunchup');
 const config = require('../../config.json').config;
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -73,22 +75,25 @@ router.post('/', (req, res) => {
           }
         ]
       };
+      sendResponse(response_url, message);
       break;
     case 'lunchup':
       message = {
         response_type: 'in_channel',
         text: 'Matching the participants...'
       };
-      // getUsers();
+      getUsers(team_id)
+        .then(users => matchUsers(team_id, users))
+        .then(matches => winston.info(matches))
+        .catch(err => winston.error(err));
       break;
     default:
       message = {
         response_type: 'in_channel',
         text: "This command hasn't been configured yet"
       };
+      sendResponse(response_url, message);
   }
-
-  sendMessage(response_url, message);
 });
 
 module.exports = router;

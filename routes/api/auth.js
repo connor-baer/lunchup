@@ -3,7 +3,7 @@ const express = require('express');
 const request = require('request');
 const async = require('async');
 const { addTeam } = require('../../lib/db');
-const lunchup = require('../../lib/lunchup');
+const { createRtm } = require('../../lib/rtm');
 const config = require('../../config.json').config;
 
 const {
@@ -102,7 +102,7 @@ router.get('/', (req, res) => {
 
         addTeam(team.id, team);
 
-        lunchup(team.bot.bot_access_token);
+        createRtm(team.bot.bot_access_token);
 
         return callback(null, team);
       }]

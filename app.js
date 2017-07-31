@@ -7,7 +7,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const { getTeams } = require('./lib/db');
-const lunchup = require('./lib/lunchup');
+const { createRtm } = require('./lib/rtm');
 
 const index = require('./routes/index');
 const auth = require('./routes/api/auth');
@@ -15,11 +15,10 @@ const events = require('./routes/api/events');
 const commands = require('./routes/api/commands');
 const actions = require('./routes/api/actions');
 
-const teams = getTeams();
-teams.forEach(team => {
+getTeams().then(teams => teams.forEach(team => {
   const botToken = team.sys.bot.bot_access_token;
-  lunchup(botToken);
-});
+  createRtm(botToken);
+}));
 
 const app = express();
 

@@ -1,6 +1,6 @@
 const winston = require('winston');
 const express = require('express');
-const sendMessage = require('../../lib/send-message');
+const { sendResponse } = require('../../lib/interactions');
 const { addUser } = require('../../lib/db');
 const config = require('../../config.json').config;
 
@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
       };
   }
 
-  sendMessage(response_url, message);
+  sendResponse(response_url, message);
 });
 
 module.exports = router;
