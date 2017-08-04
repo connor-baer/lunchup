@@ -1,6 +1,6 @@
 const winston = require('winston');
 const express = require('express');
-const config = require('../../config.json').config;
+const { config } = require('../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 

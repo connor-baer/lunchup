@@ -2,7 +2,7 @@ const winston = require('winston');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
 const { addUser } = require('../../lib/db');
-const config = require('../../config.json').config;
+const { config } = require('../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 

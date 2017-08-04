@@ -4,7 +4,7 @@ const request = require('request');
 const async = require('async');
 const { addTeam } = require('../../lib/db');
 const { createRtm } = require('../../lib/rtm');
-const config = require('../../config.json').config;
+const { config } = require('../../config.json');
 
 const {
   SLACK_CLIENT_ID,

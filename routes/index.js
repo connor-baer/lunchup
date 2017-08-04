@@ -1,7 +1,7 @@
 const winston = require('winston');
 const express = require('express');
 const { merge } = require('lodash');
-const config = require('../config.json').config;
+const { config } = require('../config.json');
 
 const router = express.Router();
 

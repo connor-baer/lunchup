@@ -1,13 +1,19 @@
 const winston = require('winston');
 
 winston.add(winston.transports.File, { filename: 'node.log' });
+winston.stream = {
+  write(message, encoding) {
+    winston.info(message);
+  }
+};
 
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 
 const { getTeams } = require('./lib/db');
-const { createRtm } = require('./lib/rtm');
+const { initSlack } = require('./lib/slack');
 
 const index = require('./routes/index');
 const auth = require('./routes/api/auth');
@@ -17,7 +23,8 @@ const actions = require('./routes/api/actions');
 
 getTeams().then(teams => teams.forEach(team => {
   const botToken = team.sys.bot.bot_access_token;
-  createRtm(botToken);
+  const apiToken = team.sys.access_token;
+  initSlack(botToken, apiToken);
 }));
 
 const app = express();
@@ -26,6 +33,15 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
 
+app.use(
+  morgan(
+    ':method :url :status :response-time ms',
+    {
+      stream: winston.stream,
+      skip: req => /\.(\w)+$/.test(req.url.split('?')[0])
+    }
+  )
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
