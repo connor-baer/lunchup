@@ -25,6 +25,7 @@ router.get('/', (req, res) => {
       message: 'Failure',
       content: error || 'No auth code given. Try again?'
     });
+    return;
   }
 
   async.auto(
@@ -110,6 +111,7 @@ router.get('/', (req, res) => {
           message: 'Failure',
           content: err && err.message
         });
+        return;
       }
 
       res.render('api/auth', {
