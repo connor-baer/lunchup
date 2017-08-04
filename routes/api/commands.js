@@ -1,4 +1,4 @@
-const winston = require('winston');
+const logger = require('../../lib/logger');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
 const { getUsers } = require('../../lib/db');
@@ -11,9 +11,6 @@ const router = express.Router();
 
 /* POST commands */
 router.post('/', (req, res) => {
-  const path = '/api/commands';
-  winston.info(`Requested ${path}`);
-
   const { response_url, command, token, team_id } = req.body;
 
   if (token !== SLACK_VERIFICATION_TOKEN) {
@@ -34,7 +31,7 @@ router.post('/', (req, res) => {
 
   const name = command.substr(1);
 
-  winston.info(`Command: ${name}`);
+  logger.info(`Command: ${name}`);
 
   let message = {};
 
@@ -84,8 +81,8 @@ router.post('/', (req, res) => {
       };
       getUsers(team_id)
         .then(users => matchUsers(team_id, users))
-        .then(matches => winston.info(matches))
-        .catch(err => winston.error(err));
+        .then(matches => logger.info(matches))
+        .catch(err => logger.error(err));
       break;
     default:
       message = {

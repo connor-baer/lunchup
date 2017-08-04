@@ -1,12 +1,4 @@
-const winston = require('winston');
-
-winston.add(winston.transports.File, { filename: 'node.log' });
-winston.stream = {
-  write(message, encoding) {
-    winston.info(message);
-  }
-};
-
+const logger = require('./lib/logger');
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -37,7 +29,7 @@ app.use(
   morgan(
     ':method :url :status :response-time ms',
     {
-      stream: winston.stream,
+      stream: logger.stream,
       skip: req => /\.(\w)+$/.test(req.url.split('?')[0])
     }
   )
@@ -71,7 +63,7 @@ app.use((err, req, res) => {
 });
 
 app.listen(8080, () => {
-  winston.info('Listening on port 8080...');
+  logger.info('Listening on port 8080...');
 });
 
 module.exports = app;

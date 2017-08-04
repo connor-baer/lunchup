@@ -1,5 +1,5 @@
-const winston = require('winston');
 const express = require('express');
+const logger = require('../../lib/logger');
 const { sendResponse } = require('../../lib/interactions');
 const { addUser } = require('../../lib/db');
 const { config } = require('../../config.json');
@@ -10,9 +10,6 @@ const router = express.Router();
 
 /* POST actions */
 router.post('/', (req, res) => {
-  const path = '/api/actions';
-  winston.info(`Requested ${path}`);
-
   const content = JSON.parse(req.body.payload);
   const { token, team, user, actions, response_url } = content;
 
@@ -32,7 +29,7 @@ router.post('/', (req, res) => {
 
   let message = {};
 
-  winston.info(`Action: ${action.name}`);
+  logger.info(`Action: ${action.name}`);
 
   switch (action.name) {
     case 'optin':

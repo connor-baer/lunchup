@@ -1,4 +1,4 @@
-const winston = require('winston');
+const logger = require('../../lib/logger');
 const express = require('express');
 const request = require('request');
 const async = require('async');
@@ -16,13 +16,10 @@ const router = express.Router();
 
 /* GET authentication */
 router.get('/', (req, res) => {
-  const path = '/api/auth';
-  winston.info(`Requested ${path}`);
-
   const { code, error } = req.query;
 
   if (!code) {
-    winston.log('error', 'No code provided.');
+    logger.error('No code provided.');
 
     res.render('api/auth', {
       message: 'Failure',
@@ -43,7 +40,7 @@ router.get('/', (req, res) => {
         request.get(authAddress, (err, response, body) => {
 
           if (err) {
-            winston.log('error', 'Error in auth.');
+            logger.error('Error in auth.');
             return callback(err);
           }
 
@@ -52,12 +49,12 @@ router.get('/', (req, res) => {
           try {
             auth = JSON.parse(body);
           } catch (e) {
-            winston.log('error', 'Could not parse auth.');
+            logger.error('Could not parse auth.');
             return callback(new Error('Could not parse auth.'));
           }
 
           if (!auth.ok) {
-            winston.log('error', auth.error);
+            logger.error(auth.error);
             return callback(new Error(auth.error));
           }
 
