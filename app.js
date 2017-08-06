@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const { getTeams } = require('./lib/db');
-const { initSlack } = require('./lib/bots');
+const { initSlack } = require('./lib/slack');
 
 const index = require('./routes/index');
 const auth = require('./routes/api/auth');

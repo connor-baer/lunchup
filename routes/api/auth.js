@@ -3,7 +3,7 @@ const express = require('express');
 const request = require('request');
 const async = require('async');
 const { addTeam } = require('../../lib/db');
-const { createBot } = require('../../lib/bots');
+const { createBot } = require('../../lib/slack');
 const { config } = require('../../config.json');
 
 const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT } = config;

@@ -2,8 +2,8 @@ const logger = require('../../lib/logger');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
 const { getUsers, updateUser } = require('../../lib/db');
-const { stopBot, restartBot, apiForTeam } = require('../../lib/bots');
-const { matchUsers } = require('../../lib/match');
+const { stopBot, restartBot, apiForTeam } = require('../../lib/slack');
+const { matchUsers, notifyUsers } = require('../../lib/match');
 const config = require('../../config.json').config;
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -12,7 +12,7 @@ const router = express.Router();
 
 /* POST commands */
 router.post('/', (req, res) => {
-  const { response_url, command, token, team_id } = req.body;
+  const { response_url, command, text, token, team_id } = req.body;
 
   if (token !== SLACK_VERIFICATION_TOKEN) {
     res.status(401).end('Unauthorized');
@@ -30,18 +30,16 @@ router.post('/', (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).send('Working on it...');
 
-  logger.info(`Command: ${command}`);
+  logger.info(`Command: ${command} ${text}`);
 
   const api = apiForTeam(team_id);
 
-  const words = command.slice(' ');
-  const name = words[0].substr(1);
-  const argument = words[1];
+  const name = command.substr(1);
 
   let message = {};
 
   if (name === 'lunchup') {
-    switch (argument) {
+    switch (text) {
       case 'stop':
         stopBot(teamId);
         break;
@@ -55,21 +53,22 @@ router.post('/', (req, res) => {
             users.map(user => {
               if (
                 user.timestamp !== false &&
-                user.timestamp.getTime() < today.getTime()
+                new Date(user.timestamp).getTime() < today.getTime()
               ) {
                 updateUser(team_id, user.id, {
                   active: true,
                   timestamp: false
                 });
+                user.active = true;
+                return user;
               }
             });
-            return users;
+            return users.filter(user => user.active);
           })
-          .then(users => {
-            const activeUsers = users.filter(user => user.active);
-            return matchUsers(team_id, activeUsers);
+          .then(users => matchUsers(team_id, activeUsers))
+          .then(matches => {
+            matches.map(match => notifyUsers(team_id, match.users));
           })
-          .then(matches => logger.info(matches))
           .catch(err => logger.error(err));
         break;
       default:
