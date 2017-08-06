@@ -2,6 +2,7 @@ const logger = require('../../lib/logger');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
 const { getUsers } = require('../../lib/db');
+const { stopBot, restartBot } = require('../../lib/bots');
 const { matchUsers } = require('../../lib/match');
 const config = require('../../config.json').config;
 
@@ -29,67 +30,43 @@ router.post('/', (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
 
-  const name = command.substr(1);
+  logger.info(`Command: ${command}`);
 
-  logger.info(`Command: ${name}`);
+  const words = command.slice(' ');
+  const name = words[0].substr(1);
+  const argument = words[1];
 
   let message = {};
 
-  switch (name) {
-    case 'lunchup':
-      message = {
-        response_type: 'in_channel',
-        attachments: [
-          {
-            text:
-              'Would you like to be paired up for lunch with a random coworker every week?',
-            fallback: 'You are unable to participate.',
-            callback_id: 'wopr_game',
-            color: '#3388ff',
-            attachment_type: 'default',
-            actions: [
-              {
-                name: 'optin',
-                text: 'Yes please!',
-                style: 'primary',
-                type: 'button',
-                value: 'true'
-              },
-              {
-                name: 'optout',
-                text: 'No thanks.',
-                style: 'danger',
-                type: 'button',
-                value: 'false'
-              },
-              {
-                name: 'later',
-                text: 'Maybe later.',
-                type: 'button',
-                value: 'later'
-              }
-            ]
-          }
-        ]
-      };
-      sendResponse(response_url, message);
-      break;
-    case 'lunchup':
-      message = {
-        response_type: 'in_channel',
-        text: 'Matching the participants...'
-      };
-      getUsers(team_id)
-        .then(users => matchUsers(team_id, users))
-        .then(matches => logger.info(matches))
-        .catch(err => logger.error(err));
-      break;
-    default:
-      message = {
-        response_type: 'in_channel',
-        text: "This command hasn't been configured yet"
-      };
-      sendResponse(response_url, message);
+  if (name === 'lunchup') {
+    switch (argument) {
+      case 'stop':
+        stopBot(teamId);
+        break;
+      case 'restart':
+        restartBot(teamId);
+        break;
+      case 'match':
+        message = {
+          response_type: 'in_channel',
+          text: 'Matching the participants...'
+        };
+        sendResponse(response_url, message);
+        getUsers(team_id)
+          .then(users => {
+            const activeUsers = users.filter(user => user.active);
+            return matchUsers(team_id, activeUsers);
+          })
+          .then(matches => logger.info(matches))
+          .catch(err => logger.error(err));
+        break;
+      default:
+        message = {
+          response_type: 'in_channel',
+          text: "This command hasn't been configured."
+        };
+        sendResponse(response_url, message);
+    }
   }
 });
 
