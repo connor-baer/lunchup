@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const { getTeams } = require('./lib/db');
-const { startBot } = require('./lib/bots');
+const { initSlack } = require('./lib/bots');
 
 const index = require('./routes/index');
 const auth = require('./routes/api/auth');
@@ -15,7 +15,7 @@ const actions = require('./routes/api/actions');
 
 getTeams().then(teams =>
   teams.forEach(team => {
-    startBot(team.id);
+    initSlack(team.id);
   })
 );
 

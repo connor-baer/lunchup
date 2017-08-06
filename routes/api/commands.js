@@ -1,8 +1,8 @@
 const logger = require('../../lib/logger');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
-const { getUsers } = require('../../lib/db');
-const { stopBot, restartBot } = require('../../lib/bots');
+const { getUsers, updateUser } = require('../../lib/db');
+const { stopBot, restartBot, apiForTeam } = require('../../lib/bots');
 const { matchUsers } = require('../../lib/match');
 const config = require('../../config.json').config;
 
@@ -28,9 +28,11 @@ router.post('/', (req, res) => {
   }
 
   // Best practice to respond with empty 200 status code.
-  res.status(200).end();
+  res.status(200).send('Working on it...');
 
   logger.info(`Command: ${command}`);
+
+  const api = apiForTeam(team_id);
 
   const words = command.slice(' ');
   const name = words[0].substr(1);
@@ -47,12 +49,22 @@ router.post('/', (req, res) => {
         restartBot(teamId);
         break;
       case 'match':
-        message = {
-          response_type: 'in_channel',
-          text: 'Matching the participants...'
-        };
-        sendResponse(response_url, message);
         getUsers(team_id)
+          .then(users => {
+            const today = new Date();
+            users.map(user => {
+              if (
+                user.timestamp !== false &&
+                user.timestamp.getTime() < today.getTime()
+              ) {
+                updateUser(team_id, user.id, {
+                  active: true,
+                  timestamp: false
+                });
+              }
+            });
+            return users;
+          })
           .then(users => {
             const activeUsers = users.filter(user => user.active);
             return matchUsers(team_id, activeUsers);

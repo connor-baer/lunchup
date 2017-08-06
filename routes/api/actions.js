@@ -1,7 +1,7 @@
 const express = require('express');
 const logger = require('../../lib/logger');
 const { sendResponse } = require('../../lib/interactions');
-const { addUser, snoozeUser, removeUser } = require('../../lib/db');
+const { addUser, updateUser, removeUser } = require('../../lib/db');
 const { config } = require('../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -34,14 +34,14 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join':
       if (action.value === 'true') {
-        addUser(team.id, user);
+        addUser(team.id, user.id);
         message = {
           response_type: 'ephermal',
           text: `🎉 Awesome! Happy to have you on board.`,
           replace_original: true
         };
       } else {
-        removeUser(team.id, user);
+        removeUser(team.id, user.id);
         message = {
           response_type: 'ephermal',
           text: `😔 Alright. Should you change your mind in the future, send me a message @lunchup.`,
@@ -51,10 +51,11 @@ router.post('/', (req, res) => {
       break;
     case 'snooze':
       const timestamp = new Date(+new Date + (1000 * 60 * 60 * 24 * 7 * Number(action.value)));
-      snoozeUser(team.id, user, timestamp);
+      const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
+      updateUser(team.id, user, { active: false, timestamp });
       message = {
         response_type: 'ephermal',
-        text: `🗓 Alright! I'll include you again in a week.`,
+        text: `🗓 Alright! I'll include you again in ${action.value} ${singOrPlur}.`,
         replace_original: true
       };
       break;
