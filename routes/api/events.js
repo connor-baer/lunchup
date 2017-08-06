@@ -9,15 +9,9 @@ const router = express.Router();
 
 /* Post events challenge */
 router.post('/', (req, res) => {
-  const { response_url, event } = req.body;
-
-  if (!event) {
-    res.status(422).end('No event specified');
-    return;
-  }
-
-  if (event.type === 'url_verification') {
+  if (req.body.type === 'url_verification') {
     const { token, challenge } = req.body;
+
     logger.info(`Challenge: ${challenge}`);
 
     if (token === SLACK_VERIFICATION_TOKEN) {
@@ -25,6 +19,13 @@ router.post('/', (req, res) => {
       return;
     }
     res.status(401).end('Unauthorized');
+  }
+
+  const { response_url, event } = req.body;
+
+  if (!event) {
+    res.status(422).end('No event specified');
+    return;
   }
 
   // Best practice to respond with empty 200 status code.
