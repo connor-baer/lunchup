@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
   let message = {};
 
   switch (name) {
-    case 'lunch':
+    case 'lunchup':
       message = {
         response_type: 'in_channel',
         attachments: [
