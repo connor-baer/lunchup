@@ -1,7 +1,7 @@
-{% extends 'layouts/layout.twig' %}
+{% extends '_layouts/message.twig' %}
 
-{% block body %}
-  <h1 class="p-headline">{{message}}</h1>
-  <h2>{{error.status}}</h2>
-  <pre>{{error.stack}}</pre>
+{% block main %}
+  <h1 class="p-headline">{{ message }}</h1>
+  <h2>{{ error.status }}</h2>
+  <pre>{{ error.stack }}</pre>
 {% endblock %}

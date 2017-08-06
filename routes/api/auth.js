@@ -18,9 +18,8 @@ router.get('/', (req, res) => {
     logger.error('No code provided.');
 
     res.render('api/auth', {
-      title: 'Failure',
-      message: 'Failure',
-      content: error || 'No auth code given. Try again?'
+      title: '🚨 Failure',
+      message: error || 'No auth code given. Try again?'
     });
     return;
   }
@@ -114,17 +113,15 @@ router.get('/', (req, res) => {
     (err, results) => {
       if (err) {
         res.render('api/auth', {
-          title: 'Failure',
-          message: 'Failure',
-          content: err && err.message
+          title: '🚨 Failure',
+          message: err && err.message
         });
         return;
       }
 
       res.render('api/auth', {
-        title: 'Success',
-        message: 'Success!',
-        content: 'You can now invite the bot to your channels and use it!'
+        title: '🚀 Success!',
+        message: 'You can now invite the bot to your channels and use it!'
       });
     }
   );
