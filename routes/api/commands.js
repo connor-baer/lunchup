@@ -28,7 +28,7 @@ router.post('/', (req, res) => {
   }
 
   // Best practice to respond with empty 200 status code.
-  res.status(200).send('Working on it...');
+  res.status(200).end('Working on it...');
 
   logger.info(`Command: ${command} ${text}`);
 

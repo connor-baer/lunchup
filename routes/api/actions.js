@@ -40,16 +40,25 @@ router.post('/', (req, res) => {
           text: `🎉 Awesome! Happy to have you on board.`,
           replace_original: true
         };
-      } else {
-        removeUser(team.id, user.id);
-        message = {
-          response_type: 'ephermal',
-          text: `😔 Alright. Should you change your mind in the future, send me a message @lunchup.`,
-          replace_original: true
-        };
+        break;
       }
+      removeUser(team.id, user.id);
+      message = {
+        response_type: 'ephermal',
+        text: `😔 Alright. Should you change your mind in the future, send me a message @lunchup.`,
+        replace_original: true
+      };
       break;
     case 'snooze':
+      if (action.value === 'false') {
+        updateUser(team.id, user, { active: true, timestamp: false });
+        message = {
+          response_type: 'ephermal',
+          text: `👍 Cool! I'll include you again.`,
+          replace_original: true
+        };
+        break;
+      }
       const timestamp = new Date(+new Date + (1000 * 60 * 60 * 24 * 7 * Number(action.value)));
       const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
       updateUser(team.id, user, { active: false, timestamp });
