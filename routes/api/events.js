@@ -1,5 +1,6 @@
 const logger = require('../../lib/logger');
 const express = require('express');
+const { sendResponse } = require('../../lib/interactions');
 const { config } = require('../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -37,7 +38,7 @@ router.post('/', (req, res) => {
         response_type: 'in_channel',
         text: 'Hi there'
       };
-      respond(response_url, message);
+      sendResponse(response_url, message);
       break;
     default:
       logger.info(event.type);
