@@ -50,7 +50,7 @@ router.post('/', (req, res) => {
       }
       break;
     case 'snooze':
-      const timestamp = new Date(+new Date + (1000 * 60 * 60 * 24 * 7 * Number(action.value));
+      const timestamp = new Date(+new Date + (1000 * 60 * 60 * 24 * 7 * Number(action.value)));
       snoozeUser(team.id, user, timestamp);
       message = {
         response_type: 'ephermal',
