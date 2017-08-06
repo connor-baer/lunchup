@@ -1,7 +1,7 @@
 const express = require('express');
 const logger = require('../../lib/logger');
 const { sendResponse } = require('../../lib/interactions');
-const { addUser } = require('../../lib/db');
+const { addUser, snoozeUser, removeUser } = require('../../lib/db');
 const { config } = require('../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -32,18 +32,28 @@ router.post('/', (req, res) => {
   logger.info(`Action: ${action.name}`);
 
   switch (action.name) {
-    case 'optin':
+    case 'opt_in':
+      addUser(team.id, user);
       message = {
         response_type: 'ephermal',
         text: `🎉 Awesome! Happy to have you on board.`,
         replace_original: true
       };
-      addUser(team.id, user);
       break;
-    case 'optout':
+    case 'opt_out':
+      removeUser(team.id, user);
       message = {
         response_type: 'ephermal',
-        text: `😔 Too bad! Should you change your mind in the future, send me a message @lunchup.`,
+        text: `😔 Alright. Should you change your mind in the future, send me a message @lunchup.`,
+        replace_original: true
+      };
+      break;
+    case 'snooze':
+      // TODO: How long?
+      snoozeUser(team.id, user);
+      message = {
+        response_type: 'ephermal',
+        text: `🗓 Alright! I'll include you again in a week.`,
         replace_original: true
       };
       break;
