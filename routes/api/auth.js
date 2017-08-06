@@ -3,14 +3,10 @@ const express = require('express');
 const request = require('request');
 const async = require('async');
 const { addTeam } = require('../../lib/db');
-const { initSlack } = require('../../lib/slack');
+const { createBot } = require('../../lib/bots');
 const { config } = require('../../config.json');
 
-const {
-  SLACK_CLIENT_ID,
-  SLACK_CLIENT_SECRET,
-  SLACK_REDIRECT
-} = config;
+const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT } = config;
 
 const router = express.Router();
 
@@ -22,6 +18,7 @@ router.get('/', (req, res) => {
     logger.error('No code provided.');
 
     res.render('api/auth', {
+      title: 'Failure',
       message: 'Failure',
       content: error || 'No auth code given. Try again?'
     });
@@ -30,7 +27,7 @@ router.get('/', (req, res) => {
 
   async.auto(
     {
-      auth: (callback) => {
+      auth: callback => {
         // Post code, app ID, and app secret, to get token.
         let authAddress = 'https://slack.com/api/oauth.access?';
         authAddress += `client_id=${SLACK_CLIENT_ID}`;
@@ -39,7 +36,6 @@ router.get('/', (req, res) => {
         authAddress += `&redirect_uri=${SLACK_REDIRECT}`;
 
         request.get(authAddress, (err, response, body) => {
-
           if (err) {
             logger.error('Error in auth.');
             return callback(err);
@@ -62,52 +58,63 @@ router.get('/', (req, res) => {
           return callback(null, auth);
         });
       },
-      identity: ['auth', (results, callback) => {
-        const auth = (results || {}).auth || {};
-        let url = 'https://slack.com/api/auth.test?';
-        url += `token=${auth.access_token}`;
+      identity: [
+        'auth',
+        (results, callback) => {
+          const auth = (results || {}).auth || {};
+          let url = 'https://slack.com/api/auth.test?';
+          url += `token=${auth.access_token}`;
 
-        request.get(url, (err, response, body) => {
-          if (err) {
-            return callback(err);
-          }
+          request.get(url, (err, response, body) => {
+            if (err) {
+              return callback(err);
+            }
 
-          let identity;
+            let identity;
 
-          try {
-            identity = JSON.parse(body);
+            try {
+              identity = JSON.parse(body);
 
-            return callback(null, identity);
-          } catch (e) {
-            return callback(e);
-          }
-        });
-      }],
-      team: ['identity', (results, callback) => {
-        const auth = (results || {}).auth || {};
-        const identity = (results || {}).identity || {};
+              return callback(null, identity);
+            } catch (e) {
+              return callback(e);
+            }
+          });
+        }
+      ],
+      team: [
+        'identity',
+        (results, callback) => {
+          const auth = (results || {}).auth || {};
+          const identity = (results || {}).identity || {};
 
-        const team = {
-          id: identity.team_id,
-          identity,
-          bot: auth.bot,
-          auth,
-          createdBy: identity.user_id,
-          url: identity.url,
-          name: identity.team,
-          access_token: auth.access_token
-        };
+          const team = {
+            id: identity.team_id,
+            identity,
+            bot: auth.bot,
+            auth,
+            createdBy: identity.user_id,
+            url: identity.url,
+            name: identity.team,
+            access_token: auth.access_token
+          };
 
-        addTeam(team.id, team);
-
-        initSlack(team.bot.bot_access_token, team.access_token);
-
-        return callback(null, team);
-      }]
+          addTeam(team.id, team)
+            .then(team => {
+              createBot(team.id);
+              return callback(null, team);
+            })
+            .catch(err => {
+              logger.error(err);
+              return callback(err);
+            });
+        }
+      ]
     },
     (err, results) => {
       if (err) {
         res.render('api/auth', {
+          title: 'Failure',
           message: 'Failure',
           content: err && err.message
         });
@@ -115,6 +122,7 @@ router.get('/', (req, res) => {
       }
 
       res.render('api/auth', {
+        title: 'Success',
         message: 'Success!',
         content: 'You can now invite the bot to your channels and use it!'
       });

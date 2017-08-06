@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const { getTeams } = require('./lib/db');
-const { initSlack } = require('./lib/slack');
+const { startBot } = require('./lib/bots');
 
 const index = require('./routes/index');
 const auth = require('./routes/api/auth');
@@ -13,11 +13,11 @@ const events = require('./routes/api/events');
 const commands = require('./routes/api/commands');
 const actions = require('./routes/api/actions');
 
-getTeams().then(teams => teams.forEach(team => {
-  const botToken = team.sys.bot.bot_access_token;
-  const apiToken = team.sys.access_token;
-  initSlack(botToken, apiToken);
-}));
+getTeams().then(teams =>
+  teams.forEach(team => {
+    startBot(team.id);
+  })
+);
 
 const app = express();
 
@@ -26,13 +26,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
 
 app.use(
-  morgan(
-    ':method :url :status :response-time ms',
-    {
-      stream: logger.stream,
-      skip: req => /\.(\w)+$/.test(req.url.split('?')[0])
-    }
-  )
+  morgan(':method :url :status :response-time ms', {
+    stream: logger.stream,
+    skip: req => /\.(\w)+$/.test(req.url.split('?')[0])
+  })
 );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

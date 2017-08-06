@@ -2,7 +2,7 @@ const logger = require('../../lib/logger');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
 const { getUsers } = require('../../lib/db');
-const { matchUsers } = require('../../lib/lunchup');
+const { matchUsers } = require('../../lib/match');
 const config = require('../../config.json').config;
 
 const { SLACK_VERIFICATION_TOKEN } = config;
