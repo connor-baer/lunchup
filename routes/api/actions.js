@@ -38,7 +38,7 @@ router.post('/', (req, res) => {
         message = {
           response_type: 'ephermal',
           text: `🎉 Awesome! Happy to have you on board.`,
-          replace_original: true
+          replace_original: false
         };
         break;
       }
@@ -46,14 +46,14 @@ router.post('/', (req, res) => {
       message = {
         response_type: 'ephermal',
         text: `😔 Alright. Should you change your mind in the future, send me a message @lunchup.`,
-        replace_original: true
+        replace_original: false
       };
       break;
     case 'snooze':
       if (action.value === 'false') {
         updateUser(team.id, user, { active: true, timestamp: false });
         message = {
-          response_type: 'ephermal',
+          response_type: 'in_channel',
           text: `👍 Cool! I'll include you again.`,
           replace_original: true
         };
