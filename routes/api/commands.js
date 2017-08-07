@@ -36,8 +36,6 @@ router.post('/', (req, res) => {
 
   const name = command.substr(1);
 
-  let message = {};
-
   if (name === 'lunchup') {
     switch (text) {
       case 'stop':
@@ -51,10 +49,10 @@ router.post('/', (req, res) => {
           .then(users => {
             const numberOfUsers = users.length;
             const userNames = users.map(user => user.name).join(', ');
-            message = {
+            sendResponse(response_url, {
               response_type: 'ephermal',
               text: `There are ${numberOfUsers} users: ${userNames}.`
-            };
+            });
           })
           .catch(err => logger.error(err));
         break;
@@ -84,11 +82,10 @@ router.post('/', (req, res) => {
           .catch(err => logger.error(err));
         break;
       default:
-        message = {
+        sendResponse(response_url, {
           response_type: 'in_channel',
           text: "This command hasn't been configured."
-        };
-        sendResponse(response_url, message);
+        });
     }
   }
 });
