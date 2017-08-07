@@ -46,6 +46,18 @@ router.post('/', (req, res) => {
       case 'restart':
         restartBot(teamId);
         break;
+      case 'users':
+        getUsers(team_id)
+          .then(users => {
+            const numberOfUsers = users.length;
+            const userNames = users.map(user => user.name).join(', ');
+            message = {
+              response_type: 'ephermal',
+              text: `There are ${numberOfUsers} users: ${userNames}.`
+            };
+          })
+          .catch(err => logger.error(err));
+        break;
       case 'match':
         getUsers(team_id)
           .then(users => {
