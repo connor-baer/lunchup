@@ -34,7 +34,7 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join':
       if (action.value === 'true') {
-        addUser(team.id, user.id);
+        addUser(team.id, user);
         message = {
           response_type: 'ephermal',
           text: `🎉 Awesome! Happy to have you on board.`,
