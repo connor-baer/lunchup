@@ -39,35 +39,34 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join':
       if (action.value === 'true') {
-        getLocations(team.id)
-          .then(locations => {
-            const locationOptions = locations.map(location => {
-              return { text: decodeURI(location.city), value: location.city }
-            });
-            message = {
-              response_type: 'ephermal',
-              text:
-                "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.",
-              replace_original: false,
-              attachments: [
-                {
-                  text: 'Where do you work?',
-                  fallback: 'You are currently unable to pick a location',
-                  color: '#3388ff',
-                  attachment_type: 'default',
-                  callback_id: 'location',
-                  actions: [
-                    {
-                      name: 'location',
-                      text: 'Choose a city...',
-                      type: 'select',
-                      options: locationOptions
-                    }
-                  ]
-                }
-              ]
-            };
+        getLocations(team.id).then(locations => {
+          const locationOptions = locations.map(location => {
+            return { text: decodeURI(location.city), value: location.city };
           });
+          message = {
+            response_type: 'ephermal',
+            text:
+              "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.",
+            replace_original: false,
+            attachments: [
+              {
+                text: 'Where do you work?',
+                fallback: 'You are currently unable to pick a location',
+                color: '#3388ff',
+                attachment_type: 'default',
+                callback_id: 'location',
+                actions: [
+                  {
+                    name: 'location',
+                    text: 'Choose a city...',
+                    type: 'select',
+                    options: locationOptions
+                  }
+                ]
+              }
+            ]
+          };
+        });
         break;
       }
       removeUser(team.id, user.id);
