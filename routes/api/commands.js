@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
             const userNames = users.map(user => user.name).join(', ');
             sendResponse(response_url, {
               response_type: 'ephermal',
-              text: `There are ${numberOfUsers} users: ${userNames}.`
+              text: `❔ There are ${numberOfUsers} users: ${userNames}.`
             });
           })
           .catch(err => logger.error(err));
@@ -93,24 +93,26 @@ router.post('/', (req, res) => {
             addLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
-              text: `Added ${location} to the available locations`
+              text: `✅ Added ${location} to the available locations.`
             });
             break;
           case 'remove':
             removeLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
-              text: `Removed ${location} from the available locations`
+              text: `✅ Removed ${location} from the available locations.`
             });
             break;
           case 'list':
             getLocations(team_id, location)
               .then(locations => {
                 const numberOfLocations = locations.length;
-                const locationNames = locations.map(location => location.city).join(', ');
+                const locationNames = locations
+                  .map(location => location.city)
+                  .join(', ');
                 sendResponse(response_url, {
                   response_type: 'ephermal',
-                  text: `There are ${numberOfLocations} locations: ${locationNames}.`
+                  text: `❔ There are ${numberOfLocations} locations: ${locationNames}.`
                 });
               })
               .catch(err => logger.error(err));
@@ -137,7 +139,7 @@ router.post('/', (req, res) => {
       default:
         sendResponse(response_url, {
           response_type: 'in_channel',
-          text: "This command hasn't been configured."
+          text: "🚫 This command hasn't been configured."
         });
     }
   }
