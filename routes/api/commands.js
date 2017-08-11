@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
             const userNames = users.map(user => user.name).join(', ');
             sendResponse(response_url, {
               response_type: 'ephermal',
-              text: `❔ There are ${numberOfUsers} users: ${userNames}.`
+              text: `ℹ️ There are ${numberOfUsers} users: ${userNames}.`
             });
           })
           .catch(err => logger.error(err));
@@ -112,7 +112,7 @@ router.post('/', (req, res) => {
                   .join(', ');
                 sendResponse(response_url, {
                   response_type: 'ephermal',
-                  text: `❔ There are ${numberOfLocations} locations: ${locationNames}.`
+                  text: `ℹ️ There are ${numberOfLocations} locations: ${locationNames}.`
                 });
               })
               .catch(err => logger.error(err));
