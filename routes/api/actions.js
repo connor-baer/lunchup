@@ -67,8 +67,8 @@ router.post('/', (req, res) => {
                 }
               ]
             };
-            break;
           });
+        break;
       }
       removeUser(team.id, user.id);
       message = {
