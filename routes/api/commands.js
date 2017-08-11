@@ -5,7 +5,8 @@ const {
   getUsers,
   updateUser,
   addLocation,
-  removeLocation
+  removeLocation,
+  getLocations
 } = require('../../lib/db');
 const { stopBot, restartBot, apiForTeam } = require('../../lib/slack');
 const { matchUsers, notifyUsers } = require('../../lib/match');
@@ -82,7 +83,7 @@ router.post('/', (req, res) => {
           })
           .catch(err => logger.error(err));
         break;
-      case 'location':
+      case 'locations':
         const location = words[2];
         if (!action || !location) {
           break;
@@ -90,9 +91,29 @@ router.post('/', (req, res) => {
         switch (action) {
           case 'add':
             addLocation(team_id, location);
+            sendResponse(response_url, {
+              response_type: 'ephermal',
+              text: `Added ${location} to the available locations`
+            });
             break;
           case 'remove':
             removeLocation(team_id, location);
+            sendResponse(response_url, {
+              response_type: 'ephermal',
+              text: `Removed ${location} from the available locations`
+            });
+            break;
+          case 'list':
+            getLocations(team_id, location)
+              .then(locations => {
+                const numberOfLocations = locations.length;
+                const locationNames = locations.map(location => location.city).join(', ');
+                sendResponse(response_url, {
+                  response_type: 'ephermal',
+                  text: `There are ${numberOfLocations} locations: ${locationNames}.`
+                });
+              })
+              .catch(err => logger.error(err));
             break;
           default:
             break;
