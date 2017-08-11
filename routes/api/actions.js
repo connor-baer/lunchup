@@ -34,11 +34,57 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join':
       if (action.value === 'true') {
-        addUser(team.id, user);
         message = {
           response_type: 'ephermal',
-          text: `🎉 Awesome! Happy to have you on board.`,
-          replace_original: false
+          text:
+            "🎉  Awesome! Lunch breaks are a bit short for ✈️, so I'll try to match you with colleagues near you.",
+          replace_original: false,
+          attachments: [
+            {
+              text: 'Where do you work?',
+              fallback: 'You are currently unable to pick a location',
+              color: '#3388ff',
+              attachment_type: 'default',
+              callback_id: 'location',
+              actions: [
+                {
+                  name: 'location',
+                  text: 'Choose a city...',
+                  type: 'select',
+                  options: [
+                    {
+                      text: 'Berlin',
+                      value: 'berlin'
+                    },
+                    {
+                      text: 'Sofia',
+                      value: 'sofia'
+                    },
+                    {
+                      text: 'Sao Paulo',
+                      value: 'sao_paulo'
+                    },
+                    {
+                      text: 'London',
+                      value: 'london'
+                    },
+                    {
+                      text: 'Amsterdam',
+                      value: 'amsterdam'
+                    },
+                    {
+                      text: 'Dublin',
+                      value: 'dublin'
+                    },
+                    {
+                      text: 'Boulder',
+                      value: 'boulder'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         };
         break;
       }
@@ -49,9 +95,19 @@ router.post('/', (req, res) => {
         replace_original: false
       };
       break;
+    case 'location':
+      const location = action.selected_options[0].value;
+      const userWithLocation = Object.assign(user, { location });
+      addUser(team.id, userWithLocation);
+      message = {
+        response_type: 'ephermal',
+        text: `🗺 ${location}, nice! I've updated your location.`,
+        replace_original: false
+      };
+      break;
     case 'snooze':
       if (action.value === 'false') {
-        updateUser(team.id, user, { active: true, timestamp: false });
+        updateUser(team.id, user.id, { active: true, timestamp: false });
         message = {
           response_type: 'in_channel',
           text: `👍 Cool! I'll include you again.`,
@@ -59,9 +115,11 @@ router.post('/', (req, res) => {
         };
         break;
       }
-      const timestamp = new Date(+new Date + (1000 * 60 * 60 * 24 * 7 * Number(action.value)));
+      const timestamp = new Date(
+        +new Date() + 1000 * 60 * 60 * 24 * 7 * Number(action.value)
+      );
       const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
-      updateUser(team.id, user, { active: false, timestamp });
+      updateUser(team.id, user.id, { active: false, timestamp });
       message = {
         response_type: 'ephermal',
         text: `🗓 Alright! I'll include you again in ${action.value} ${singOrPlur}.`,
