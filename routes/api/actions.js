@@ -41,7 +41,9 @@ router.post('/', (req, res) => {
       if (action.value === 'true') {
         getLocations(team.id)
           .then(locations => {
-            const locationOptions = locations.map(location => { text: decodeURI(location.city), value: location.city })
+            const locationOptions = locations.map(location => {
+              return { text: decodeURI(location.city), value: location.city }
+            });
             message = {
               response_type: 'ephermal',
               text:
