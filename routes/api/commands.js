@@ -85,7 +85,7 @@ router.post('/', (req, res) => {
         break;
       case 'locations':
         const location = words[2];
-        if (!action || !location) {
+        if (!action) {
           break;
         }
         switch (action) {
