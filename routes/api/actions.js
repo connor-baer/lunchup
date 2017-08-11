@@ -1,7 +1,12 @@
 const express = require('express');
 const logger = require('../../lib/logger');
 const { sendResponse } = require('../../lib/interactions');
-const { addUser, updateUser, removeUser } = require('../../lib/db');
+const {
+  addUser,
+  updateUser,
+  removeUser,
+  getLocations
+} = require('../../lib/db');
 const { config } = require('../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -34,59 +39,34 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join':
       if (action.value === 'true') {
-        message = {
-          response_type: 'ephermal',
-          text:
-            "🎉  Awesome! Lunch breaks are a bit short for ✈️, so I'll try to match you with colleagues near you.",
-          replace_original: false,
-          attachments: [
-            {
-              text: 'Where do you work?',
-              fallback: 'You are currently unable to pick a location',
-              color: '#3388ff',
-              attachment_type: 'default',
-              callback_id: 'location',
-              actions: [
+        getLocations(team.id)
+          .then(locations => {
+            const locationOptions = locations.map(location => { text: decodeURI(location.city), value: location.city })
+            message = {
+              response_type: 'ephermal',
+              text:
+                "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.",
+              replace_original: false,
+              attachments: [
                 {
-                  name: 'location',
-                  text: 'Choose a city...',
-                  type: 'select',
-                  options: [
+                  text: 'Where do you work?',
+                  fallback: 'You are currently unable to pick a location',
+                  color: '#3388ff',
+                  attachment_type: 'default',
+                  callback_id: 'location',
+                  actions: [
                     {
-                      text: 'Berlin',
-                      value: 'berlin'
-                    },
-                    {
-                      text: 'Sofia',
-                      value: 'sofia'
-                    },
-                    {
-                      text: 'Sao Paulo',
-                      value: 'sao_paulo'
-                    },
-                    {
-                      text: 'London',
-                      value: 'london'
-                    },
-                    {
-                      text: 'Amsterdam',
-                      value: 'amsterdam'
-                    },
-                    {
-                      text: 'Dublin',
-                      value: 'dublin'
-                    },
-                    {
-                      text: 'Boulder',
-                      value: 'boulder'
+                      name: 'location',
+                      text: 'Choose a city...',
+                      type: 'select',
+                      options: locationOptions
                     }
                   ]
                 }
               ]
-            }
-          ]
-        };
-        break;
+            };
+            break;
+          });
       }
       removeUser(team.id, user.id);
       message = {

@@ -1,7 +1,12 @@
 const logger = require('../../lib/logger');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
-const { getUsers, updateUser } = require('../../lib/db');
+const {
+  getUsers,
+  updateUser,
+  addLocation,
+  removeLocation
+} = require('../../lib/db');
 const { stopBot, restartBot, apiForTeam } = require('../../lib/slack');
 const { matchUsers, notifyUsers } = require('../../lib/match');
 const config = require('../../config.json').config;
@@ -34,16 +39,12 @@ router.post('/', (req, res) => {
 
   const api = apiForTeam(team_id);
 
-  const name = command.substr(1);
+  const words = text.split(' ');
+  const namespace = words[0];
+  const action = words[1];
 
-  if (name === 'lunchup') {
-    switch (text) {
-      case 'stop':
-        stopBot(teamId);
-        break;
-      case 'restart':
-        restartBot(teamId);
-        break;
+  if (command === '/lunchup') {
+    switch (words[0]) {
       case 'users':
         getUsers(team_id)
           .then(users => {
@@ -80,6 +81,37 @@ router.post('/', (req, res) => {
             matches.map(match => notifyUsers(team_id, match.users));
           })
           .catch(err => logger.error(err));
+        break;
+      case 'location':
+        const location = words[2];
+        if (!action || !location) {
+          break;
+        }
+        switch (action) {
+          case 'add':
+            addLocation(team_id, location);
+            break;
+          case 'remove':
+            removeLocation(team_id, location);
+            break;
+          default:
+            break;
+        }
+        break;
+      case 'bot':
+        if (!action) {
+          break;
+        }
+        switch (words[1]) {
+          case 'restart':
+            restartBot(teamId);
+            break;
+          case 'stop':
+            stopBot(teamId);
+            break;
+          default:
+            break;
+        }
         break;
       default:
         sendResponse(response_url, {
