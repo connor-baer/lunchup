@@ -83,7 +83,7 @@ router.post('/', (req, res) => {
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗺 ${location}, nice! I've updated your location.`,
-        replace_original: false
+        replace_original: true
       });
       break;
     case 'snooze':
