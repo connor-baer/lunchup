@@ -100,7 +100,7 @@ router.get('/', (req, res) => {
           };
 
           addTeam(team.id, team)
-            .then(team => {
+            .then(() => {
               initSlack(team.id);
               return callback(null, team);
             })
