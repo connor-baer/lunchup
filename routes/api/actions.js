@@ -43,7 +43,7 @@ router.post('/', (req, res) => {
           const locationOptions = locations.map(location => {
             return { text: decodeURI(location.city), value: location.city };
           });
-          message = {
+          sendResponse(response_url, {
             response_type: 'ephermal',
             text:
               "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.",
@@ -65,26 +65,26 @@ router.post('/', (req, res) => {
                 ]
               }
             ]
-          };
+          });
         });
         break;
       }
       removeUser(team.id, user.id);
-      message = {
+      sendResponse(response_url, {
         response_type: 'ephermal',
         text: `😔 Alright. Should you change your mind in the future, send me a message @lunchup.`,
         replace_original: false
-      };
+      });
       break;
     case 'location':
       const location = action.selected_options[0].value;
       const userWithLocation = Object.assign(user, { location });
       addUser(team.id, userWithLocation);
-      message = {
+      sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗺 ${location}, nice! I've updated your location.`,
         replace_original: false
-      };
+      });
       break;
     case 'snooze':
       if (action.value === 'false') {
@@ -101,21 +101,19 @@ router.post('/', (req, res) => {
       );
       const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
       updateUser(team.id, user.id, { active: false, timestamp });
-      message = {
+      sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗓 Alright! I'll include you again in ${action.value} ${singOrPlur}.`,
         replace_original: true
-      };
+      });
       break;
     default:
-      message = {
+      sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🚨 This action hasn't been configured yet`,
         replace_original: false
-      };
+      });
   }
-
-  sendResponse(response_url, message);
 });
 
 module.exports = router;
