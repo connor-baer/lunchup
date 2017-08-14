@@ -76,6 +76,7 @@ router.get('/', (req, res) => {
 
               return callback(null, identity);
             } catch (e) {
+              logger.error(e);
               return callback(e);
             }
           });
