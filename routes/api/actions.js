@@ -44,7 +44,13 @@ router.post('/', (req, res) => {
           const locationOptions = locations.map(location => {
             return { text: decodeURI(location.city), value: location.city };
           });
-          sendResponse(response_url, MESSAGE.location(locationOptions));
+          sendResponse(response_url, {
+            response_type: 'ephermal',
+            text:
+              "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.",
+            replace_original: false,
+            attachments: MESSAGE.location(locationOptions)
+          });
         });
         break;
       }
