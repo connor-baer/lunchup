@@ -3,13 +3,17 @@ const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
 const {
   getUsers,
-  updateUser,
   addLocation,
   removeLocation,
   getLocations
 } = require('../../lib/db');
 const { stopBot, restartBot, apiForTeam } = require('../../lib/slack');
-const { matchUsers, notifyUsers } = require('../../lib/match');
+const {
+  updateUsers,
+  groupUsers,
+  matchUsers,
+  notifyUsers
+} = require('../../lib/match');
 const config = require('../../config.json').config;
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -41,7 +45,6 @@ router.post('/', (req, res) => {
   const api = apiForTeam(team_id);
 
   const words = text.split(' ');
-  const namespace = words[0];
   const action = words[1];
 
   if (command === '/lunchup') {
@@ -58,32 +61,22 @@ router.post('/', (req, res) => {
           })
           .catch(err => logger.error(err));
         break;
-      case 'match':
+      case 'match': {
         getUsers(team_id)
-          .then(users => {
-            const today = new Date();
-            users.map(user => {
-              if (
-                user.timestamp !== false &&
-                new Date(user.timestamp).getTime() < today.getTime()
-              ) {
-                updateUser(team_id, user.id, {
-                  active: true,
-                  timestamp: false
-                });
-                user.active = true;
-                return user;
-              }
-            });
-            return users.filter(user => user.active);
-          })
-          .then(users => matchUsers(team_id, activeUsers))
-          .then(matches => {
-            matches.map(match => notifyUsers(team_id, match.users));
+          .then(users => updateUsers(team_id, users))
+          .then(activeUsers => groupUsers(team_id, activeUsers))
+          .then(groupedUsers => {
+            const matching = groupedUsers.map(group =>
+              matchUsers(team_id, group.users).then(matches =>
+                matches.map(match => notifyUsers(team_id, match.users))
+              )
+            );
+            return Promise.all(matching);
           })
           .catch(err => logger.error(err));
         break;
-      case 'locations':
+      }
+      case 'locations': {
         const location = words[2];
         if (!action) {
           break;
@@ -108,7 +101,7 @@ router.post('/', (req, res) => {
               .then(locations => {
                 const numberOfLocations = locations.length;
                 const locationNames = locations
-                  .map(location => location.city)
+                  .map(item => item.city)
                   .join(', ');
                 sendResponse(response_url, {
                   response_type: 'ephermal',
@@ -121,26 +114,29 @@ router.post('/', (req, res) => {
             break;
         }
         break;
-      case 'bot':
+      }
+      case 'bot': {
         if (!action) {
           break;
         }
         switch (words[1]) {
           case 'restart':
-            restartBot(teamId);
+            restartBot(team_id);
             break;
           case 'stop':
-            stopBot(teamId);
+            stopBot(team_id);
             break;
           default:
             break;
         }
         break;
-      default:
+      }
+      default: {
         sendResponse(response_url, {
           response_type: 'in_channel',
           text: "🚫 This command hasn't been configured."
         });
+      }
     }
   }
 });

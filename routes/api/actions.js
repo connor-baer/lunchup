@@ -33,8 +33,6 @@ router.post('/', (req, res) => {
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
 
-  let message = {};
-
   logger.info(`Action: ${action.name}`);
 
   switch (action.name) {
