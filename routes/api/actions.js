@@ -1,5 +1,6 @@
 const express = require('express');
 const logger = require('../../lib/logger');
+const MESSAGE = require('../../lib/messages');
 const { sendResponse } = require('../../lib/interactions');
 const {
   addUser,
@@ -43,29 +44,7 @@ router.post('/', (req, res) => {
           const locationOptions = locations.map(location => {
             return { text: decodeURI(location.city), value: location.city };
           });
-          sendResponse(response_url, {
-            response_type: 'ephermal',
-            text:
-              "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.",
-            replace_original: false,
-            attachments: [
-              {
-                text: 'Where do you work?',
-                fallback: 'You are currently unable to pick a location',
-                color: '#3388ff',
-                attachment_type: 'default',
-                callback_id: 'location',
-                actions: [
-                  {
-                    name: 'location',
-                    text: 'Choose a city...',
-                    type: 'select',
-                    options: locationOptions
-                  }
-                ]
-              }
-            ]
-          });
+          sendResponse(response_url, MESSAGE.location(locationOptions));
         });
         break;
       }
