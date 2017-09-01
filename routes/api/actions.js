@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
   logger.info(`Action: ${action.name}`);
 
   switch (action.name) {
-    case 'join':
+    case 'join': {
       if (action.value === 'true') {
         getLocations(team.id).then(locations => {
           const locationOptions = locations.map(location => {
@@ -59,24 +59,15 @@ router.post('/', (req, res) => {
         replace_original: false
       });
       break;
-    case 'location':
-      const location = action.selected_options[0].value;
-      const userWithLocation = Object.assign(user, { location });
-      addUser(team.id, userWithLocation);
-      sendResponse(response_url, {
-        response_type: 'ephermal',
-        text: `🗺 ${location}, nice! I've updated your location.`,
-        replace_original: true
-      });
-      break;
-    case 'snooze':
+    }
+    case 'snooze': {
       if (action.value === 'false') {
         updateUser(team.id, user.id, { active: true, timestamp: false });
-        message = {
+        sendResponse(response_url, {
           response_type: 'in_channel',
           text: `👍 Cool! I'll include you again.`,
           replace_original: true
-        };
+        });
         break;
       }
       const timestamp = new Date(
@@ -90,12 +81,42 @@ router.post('/', (req, res) => {
         replace_original: true
       });
       break;
-    default:
+    }
+    case 'leave': {
+      if (action.value === 'false') {
+        sendResponse(response_url, {
+          response_type: 'in_channel',
+          text: `😌 No worries, you're still on board.`,
+          replace_original: true
+        });
+        break;
+      }
+      removeUser(team.id, user.id);
+      sendResponse(response_url, {
+        response_type: 'ephermal',
+        text: `😢 Noooooo! Fine, I've removed you from the list.`,
+        replace_original: true
+      });
+      break;
+    }
+    case 'location': {
+      const location = action.selected_options[0].value;
+      const userWithLocation = Object.assign(user, { location });
+      addUser(team.id, userWithLocation);
+      sendResponse(response_url, {
+        response_type: 'ephermal',
+        text: `🗺 ${location}, nice! I've updated your location.`,
+        replace_original: true
+      });
+      break;
+    }
+    default: {
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🚨 This action hasn't been configured yet`,
         replace_original: false
       });
+    }
   }
 });
 
