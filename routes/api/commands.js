@@ -7,7 +7,7 @@ const {
   removeLocation,
   getLocations
 } = require('../../lib/db');
-const { stopBot, restartBot, apiForTeam } = require('../../lib/slack');
+const { stopBot, restartBot } = require('../../lib/slack');
 const {
   updateUsers,
   groupUsers,
@@ -41,8 +41,6 @@ router.post('/', (req, res) => {
   res.status(200).end('Working on it...');
 
   logger.info(`Command: ${command} ${text}`);
-
-  const api = apiForTeam(team_id);
 
   const words = text.split(' ');
   const action = words[1];
