@@ -57,7 +57,13 @@ router.post('/', (req, res) => {
               text: `ℹ️ There are ${numberOfUsers} users: ${userNames}.`
             });
           })
-          .catch(err => logger.error(err));
+          .catch(err => {
+            logger.error(err);
+            sendResponse(response_url, {
+              response_type: 'ephermal',
+              text: err
+            });
+          });
         break;
       case 'match': {
         getUsers(team_id)
@@ -71,7 +77,13 @@ router.post('/', (req, res) => {
             );
             return Promise.all(matching);
           })
-          .catch(err => logger.error(err));
+          .catch(err => {
+            logger.error(err);
+            sendResponse(response_url, {
+              response_type: 'ephermal',
+              text: err
+            });
+          });
         break;
       }
       case 'locations': {
@@ -106,7 +118,13 @@ router.post('/', (req, res) => {
                   text: `ℹ️ There are ${numberOfLocations} locations: ${locationNames}.`
                 });
               })
-              .catch(err => logger.error(err));
+              .catch(err => {
+                logger.error(err);
+                sendResponse(response_url, {
+                  response_type: 'ephermal',
+                  text: err
+                });
+              });
             break;
           default:
             break;
