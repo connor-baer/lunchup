@@ -64,7 +64,7 @@ router.post('/', (req, res) => {
       if (action.value === 'false') {
         updateUser(team.id, user.id, { active: true, timestamp: false });
         sendResponse(response_url, {
-          response_type: 'in_channel',
+          response_type: 'ephermal',
           text: `👍 Cool! I'll include you again.`,
           replace_original: true
         });
@@ -85,7 +85,7 @@ router.post('/', (req, res) => {
     case 'leave': {
       if (action.value === 'false') {
         sendResponse(response_url, {
-          response_type: 'in_channel',
+          response_type: 'ephermal',
           text: `😌 No worries, you're still on board.`,
           replace_original: true
         });
