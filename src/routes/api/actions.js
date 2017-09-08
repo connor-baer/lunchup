@@ -8,7 +8,7 @@ const {
   removeUser,
   getLocations
 } = require('../../lib/db');
-const { config } = require('../../config.json');
+const { config } = require('../../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 
@@ -39,9 +39,10 @@ router.post('/', (req, res) => {
     case 'join': {
       if (action.value === 'true') {
         getLocations(team.id).then(locations => {
-          const locationOptions = locations.map(location => {
-            return { text: decodeURI(location.city), value: location.city };
-          });
+          const locationOptions = locations.map(location => ({
+            text: decodeURI(location.city),
+            value: location.city
+          }));
           sendResponse(response_url, {
             response_type: 'ephermal',
             text:
@@ -55,7 +56,8 @@ router.post('/', (req, res) => {
       removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
-        text: `😔 Alright. Should you change your mind in the future, send me a message @lunchup.`,
+        text:
+          '😔 Alright. Should you change your mind in the future, send me a message @lunchup.',
         replace_original: false
       });
       break;
@@ -65,7 +67,7 @@ router.post('/', (req, res) => {
         updateUser(team.id, user.id, { active: true, timestamp: false });
         sendResponse(response_url, {
           response_type: 'ephermal',
-          text: `👍 Cool! I'll include you again.`,
+          text: "👍 Cool! I'll include you again.",
           replace_original: true
         });
         break;
@@ -86,7 +88,7 @@ router.post('/', (req, res) => {
       if (action.value === 'false') {
         sendResponse(response_url, {
           response_type: 'ephermal',
-          text: `😌 No worries, you're still on board.`,
+          text: "😌 No worries, you're still on board.",
           replace_original: true
         });
         break;
@@ -94,7 +96,7 @@ router.post('/', (req, res) => {
       removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
-        text: `😢 Noooooo! Fine, I've removed you from the list.`,
+        text: "😢 Noooooo! Fine, I've removed you from the list.",
         replace_original: true
       });
       break;
@@ -113,7 +115,7 @@ router.post('/', (req, res) => {
     default: {
       sendResponse(response_url, {
         response_type: 'ephermal',
-        text: `🚨 This action hasn't been configured yet`,
+        text: "🚨 This action hasn't been configured yet",
         replace_original: false
       });
     }

@@ -1,8 +1,4 @@
-const logger = require('./logger');
-const { config } = require('../config.json');
-const { getTeam, getLocations } = require('./db');
-
-const color = '#3388ff';
+const { color } = require('../../config.json');
 
 const join = () => [
   {

@@ -3,11 +3,11 @@ const { find, filter } = require('lodash');
 const fileAsync = require('lowdb/lib/storages/file-async');
 const Cryptr = require('cryptr');
 
-const { cryptrKey } = require('../config.json');
+const { cryptrKey } = require('../../config.json');
 
 const cryptr = new Cryptr(cryptrKey);
 
-const folder = 'data/';
+const folder = '../data/';
 const db = low(`${folder}db.json`, {
   storage: fileAsync,
   format: {

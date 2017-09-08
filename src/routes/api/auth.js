@@ -4,7 +4,7 @@ const request = require('request');
 const async = require('async');
 const { addTeam } = require('../../lib/db');
 const { initSlack } = require('../../lib/slack');
-const { config } = require('../../config.json');
+const { config } = require('../../../config.json');
 
 const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT } = config;
 

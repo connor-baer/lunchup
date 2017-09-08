@@ -1,7 +1,7 @@
 const logger = require('../../lib/logger');
 const express = require('express');
 const { sendResponse } = require('../../lib/interactions');
-const { config } = require('../../config.json');
+const { config } = require('../../../config.json');
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 

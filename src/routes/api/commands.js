@@ -14,7 +14,7 @@ const {
   matchUsers,
   notifyUsers
 } = require('../../lib/match');
-const config = require('../../config.json').config;
+const config = require('../../../config.json').config;
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 

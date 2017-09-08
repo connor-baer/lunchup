@@ -1,7 +1,11 @@
 # Project specific
 config.json
-data/*
 package-lock.json
+data/*
+dist/
+build/
+test/
+.DS_Store
 
 # Logs
 logs

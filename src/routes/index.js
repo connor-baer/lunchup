@@ -1,7 +1,7 @@
 const logger = require('../lib/logger');
 const express = require('express');
 const { merge } = require('lodash');
-const { config } = require('../config.json');
+const { config } = require('../../config.json');
 
 const router = express.Router();
 
