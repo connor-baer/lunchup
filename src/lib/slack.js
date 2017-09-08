@@ -183,24 +183,30 @@ export function startBot(teamId, botToken) {
         'support',
         'question'
       ]): {
-        rtm.sendMessage(
-          `Hi, my name is <@${rtm.activeUserId}>! 👋 I match up two random coworkers every week to go on a blind lunch. You can *join*, *take a break*, *leave*, or *update your location*. Just send me a message that includes one of these keywords or a similar one.`,
-          channel
-        );
+        rtm.send({
+          text: `Hi, my name is <@${rtm.activeUserId}>! 👋 I match up two random coworkers every week to go on a blind lunch. You can *join*, *take a break*, *leave*, or *update your location*. Just send me a message that includes one of these keywords or a similar one.`,
+          channel,
+          thread_ts,
+          type: RTM_EVENTS.MESSAGE
+        });
         break;
       }
       case contains(text, ['fuck', 'shit', 'asshole', 'bitch']): {
-        rtm.sendMessage(
-          '💩 https://www.youtube.com/watch?v=hpigjnKl7nI',
-          channel
-        );
+        rtm.send({
+          text: '💩 https://www.youtube.com/watch?v=hpigjnKl7nI',
+          channel,
+          thread_ts,
+          type: RTM_EVENTS.MESSAGE
+        });
         break;
       }
       default: {
-        rtm.sendMessage(
-          `I'm sorry <@${user}>, I couldn't understand your message. Sometimes I have an easier time with a few simple keywords.`,
-          channel
-        );
+        rtm.send({
+          text: `I'm sorry <@${user}>, I couldn't understand your message. Sometimes I have an easier time with a few simple keywords.`,
+          channel,
+          thread_ts,
+          type: RTM_EVENTS.MESSAGE
+        });
       }
     }
   });
