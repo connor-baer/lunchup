@@ -1,7 +1,6 @@
-const logger = require('../lib/logger');
-const express = require('express');
-const { merge } = require('lodash');
-const { config } = require('../../config.json');
+import express from 'express';
+import { merge } from 'lodash';
+import { config } from '../../config.json';
 
 const router = express.Router();
 
@@ -10,4 +9,4 @@ router.get('/', (req, res) => {
   res.render('index', merge(config, { title: 'Lunchup' }));
 });
 
-module.exports = router;
+export { router as index };

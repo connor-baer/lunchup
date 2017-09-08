@@ -1,7 +1,7 @@
-const logger = require('./logger');
-const request = require('request');
+import request from 'request';
+import logger from './logger';
 
-function sendResponse(responseURL, JSONmessage) {
+export function sendResponse(responseURL, JSONmessage) {
   const postOptions = {
     uri: responseURL,
     method: 'POST',
@@ -19,5 +19,3 @@ function sendResponse(responseURL, JSONmessage) {
     logger.info('Message sent.', JSONmessage);
   });
 }
-
-module.exports = { sendResponse };

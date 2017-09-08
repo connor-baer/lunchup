@@ -1,13 +1,13 @@
-const low = require('lowdb');
-const { find, filter } = require('lodash');
-const fileAsync = require('lowdb/lib/storages/file-async');
-const Cryptr = require('cryptr');
+import low from 'lowdb';
+import { find, filter } from 'lodash';
+import fileAsync from 'lowdb/lib/storages/file-async';
+import Cryptr from 'cryptr';
 
-const { cryptrKey } = require('../../config.json');
+import { cryptrKey } from '../../config.json';
 
 const cryptr = new Cryptr(cryptrKey);
 
-const folder = '../data/';
+const folder = 'data/';
 const db = low(`${folder}db.json`, {
   storage: fileAsync,
   format: {
@@ -30,7 +30,7 @@ db
   })
   .write();
 
-function addTeam(teamId, teamInfo) {
+export function addTeam(teamId, teamInfo) {
   if (hasTeam(teamId)) {
     return updateTeam(teamId, teamInfo);
   }
@@ -53,7 +53,7 @@ function addTeam(teamId, teamInfo) {
   });
 }
 
-function updateTeam(teamId, teamInfo) {
+export function updateTeam(teamId, teamInfo) {
   return new Promise((resolve, reject) => {
     db
       .get('teams')
@@ -65,14 +65,14 @@ function updateTeam(teamId, teamInfo) {
   });
 }
 
-function hasTeam(teamId) {
+export function hasTeam(teamId) {
   return db
     .get('teams')
     .find({ id: teamId })
     .value();
 }
 
-function getTeam(teamId) {
+export function getTeam(teamId) {
   return new Promise((resolve, reject) => {
     if (!db.has('teams').value()) {
       return reject('No teams exist yet');
@@ -88,7 +88,7 @@ function getTeam(teamId) {
   });
 }
 
-function getTeams() {
+export function getTeams() {
   return new Promise((resolve, reject) => {
     if (!db.has('teams').value()) {
       return reject('No teams exist yet');
@@ -98,7 +98,7 @@ function getTeams() {
   });
 }
 
-function addUser(teamId, user) {
+export function addUser(teamId, user) {
   if (hasUser(teamId, user.id)) {
     return updateUser(teamId, user.id, user);
   }
@@ -119,7 +119,7 @@ function addUser(teamId, user) {
   });
 }
 
-function updateUser(teamId, userId, updates = {}) {
+export function updateUser(teamId, userId, updates = {}) {
   return new Promise((resolve, reject) => {
     db
       .get('teams')
@@ -133,7 +133,7 @@ function updateUser(teamId, userId, updates = {}) {
   });
 }
 
-function removeUser(teamId, userId) {
+export function removeUser(teamId, userId) {
   return new Promise((resolve, reject) => {
     db
       .get('teams')
@@ -147,7 +147,7 @@ function removeUser(teamId, userId) {
   });
 }
 
-function hasUser(teamId, userId) {
+export function hasUser(teamId, userId) {
   const users = db
     .get('teams')
     .find({ id: teamId })
@@ -156,18 +156,21 @@ function hasUser(teamId, userId) {
   return find(users, { id: userId }) || false;
 }
 
-function getUsers(teamId) {
+export function getUsers(teamId) {
   return new Promise((resolve, reject) => {
     const users = db
       .get('teams')
       .find({ id: teamId })
       .get('users')
       .value();
+    if (!users) {
+      return reject('No users exist yet');
+    }
     return resolve(users);
   });
 }
 
-function addLocation(teamId, location) {
+export function addLocation(teamId, location) {
   const newLocation = { city: encodeURI(location) };
   return new Promise((resolve, reject) => {
     db
@@ -181,7 +184,7 @@ function addLocation(teamId, location) {
   });
 }
 
-function removeLocation(teamId, location) {
+export function removeLocation(teamId, location) {
   const oldLocation = { city: encodeURI(location) };
   return new Promise((resolve, reject) => {
     db
@@ -195,7 +198,7 @@ function removeLocation(teamId, location) {
   });
 }
 
-function getLocations(teamId) {
+export function getLocations(teamId) {
   return new Promise((resolve, reject) => {
     const locations = db
       .get('teams')
@@ -206,7 +209,7 @@ function getLocations(teamId) {
   });
 }
 
-function hasMatch(teamId, matchId) {
+export function hasMatch(teamId, matchId) {
   const matches = db
     .get('teams')
     .find({ id: teamId })
@@ -215,7 +218,7 @@ function hasMatch(teamId, matchId) {
   return find(matches, { id: matchId }) || false;
 }
 
-function addMatch(teamId, match) {
+export function addMatch(teamId, match) {
   db
     .get('teams')
     .find({ id: teamId })
@@ -225,7 +228,7 @@ function addMatch(teamId, match) {
     .write();
 }
 
-function getMatches(teamId, timestamp) {
+export function getMatches(teamId, timestamp) {
   const matches = db
     .get('teams')
     .find({ id: teamId })
@@ -233,22 +236,3 @@ function getMatches(teamId, timestamp) {
     .value();
   return filter(matches, { timestamp });
 }
-
-module.exports = {
-  addTeam,
-  updateTeam,
-  hasTeam,
-  getTeam,
-  getTeams,
-  addUser,
-  updateUser,
-  removeUser,
-  hasUser,
-  getUsers,
-  addLocation,
-  removeLocation,
-  getLocations,
-  hasMatch,
-  addMatch,
-  getMatches
-};

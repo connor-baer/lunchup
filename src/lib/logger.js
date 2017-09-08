@@ -1,5 +1,5 @@
-const winston = require('winston');
-const moment = require('moment');
+import winston from 'winston';
+import moment from 'moment';
 
 const Logger = winston.Logger;
 const File = winston.transports.File;
@@ -56,4 +56,4 @@ logger.stream = {
   }
 };
 
-module.exports = logger;
+export default logger;

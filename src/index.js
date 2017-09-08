@@ -1,17 +1,18 @@
-const logger = require('./lib/logger');
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
+import express from 'express';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
+import logger from './lib/logger';
 
-const { getTeams } = require('./lib/db');
-const { initSlack } = require('./lib/slack');
+import { getTeams } from './lib/db';
+import { initSlack } from './lib/slack';
 
-const index = require('./routes/index');
-const auth = require('./routes/api/auth');
-const events = require('./routes/api/events');
-const commands = require('./routes/api/commands');
-const actions = require('./routes/api/actions');
+import { index } from './routes/index';
+import { auth } from './routes/api/auth';
+import { events } from './routes/api/events';
+import { commands } from './routes/api/commands';
+import { actions } from './routes/api/actions';
+
+const port = process.env.PORT || 8080;
 
 getTeams().then(teams =>
   teams.forEach(team => {
@@ -22,7 +23,7 @@ getTeams().then(teams =>
 const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', 'views');
 app.set('view engine', 'twig');
 
 app.use(
@@ -33,7 +34,7 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 app.use('/', index);
 app.use('/api/auth', auth);
@@ -59,8 +60,8 @@ app.use((err, req, res) => {
   });
 });
 
-app.listen(8080, () => {
-  logger.info('Listening on port 8080...');
+app.listen(port, () => {
+  logger.info(`Listening on port ${port}...`);
 });
 
-module.exports = app;
+export { app };

@@ -1,20 +1,20 @@
-const logger = require('../../lib/logger');
-const express = require('express');
-const { sendResponse } = require('../../lib/interactions');
-const {
+import express from 'express';
+import logger from '../../lib/logger';
+import { sendResponse } from '../../lib/interactions';
+import {
   getUsers,
   addLocation,
   removeLocation,
   getLocations
-} = require('../../lib/db');
-const { stopBot, restartBot } = require('../../lib/slack');
-const {
+} from '../../lib/db';
+import { stopBot, restartBot } from '../../lib/slack';
+import {
   updateUsers,
   groupUsers,
   matchUsers,
   notifyUsers
-} = require('../../lib/match');
-const config = require('../../../config.json').config;
+} from '../../lib/match';
+import { config } from '../../../config.json';
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 
@@ -157,4 +157,4 @@ router.post('/', (req, res) => {
   }
 });
 
-module.exports = router;
+export { router as commands };

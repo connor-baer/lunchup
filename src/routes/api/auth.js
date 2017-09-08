@@ -1,10 +1,10 @@
-const logger = require('../../lib/logger');
-const express = require('express');
-const request = require('request');
-const async = require('async');
-const { addTeam } = require('../../lib/db');
-const { initSlack } = require('../../lib/slack');
-const { config } = require('../../../config.json');
+import express from 'express';
+import request from 'request';
+import async from 'async';
+import logger from '../../lib/logger';
+import { addTeam } from '../../lib/db';
+import { initSlack } from '../../lib/slack';
+import { config } from '../../../config.json';
 
 const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT } = config;
 
@@ -128,4 +128,4 @@ router.get('/', (req, res) => {
   );
 });
 
-module.exports = router;
+export { router as auth };

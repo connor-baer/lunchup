@@ -1,32 +1,34 @@
-const logger = require('./logger');
-const { find } = require('lodash');
-const RtmClient = require('@slack/client').RtmClient;
-const WebClient = require('@slack/client').WebClient;
-const MemoryDataStore = require('@slack/client').MemoryDataStore;
-const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
-const MESSAGE = require('./messages');
-const { contains } = require('./helpers');
-const { getTeam, getLocations } = require('./db');
+import { find } from 'lodash';
+import {
+  RtmClient,
+  WebClient,
+  MemoryDataStore,
+  RTM_EVENTS
+} from '@slack/client';
+import MESSAGE from './messages';
+import { contains } from './helpers';
+import { getTeam, getLocations } from './db';
+import logger from './logger';
 
 const apis = [];
 const bots = [];
 
-function apiForTeam(teamId) {
+export function apiForTeam(teamId) {
   return find(apis, { teamId });
 }
 
-function rtmForTeam(teamId) {
+export function rtmForTeam(teamId) {
   return find(bots, { teamId });
 }
 
-function startApi(teamId, apiToken) {
+export function startApi(teamId, apiToken) {
   const api = new WebClient(apiToken);
 
   api.teamId = teamId;
   apis.push(api);
 }
 
-function startBot(teamId, botToken) {
+export function startBot(teamId, botToken) {
   const rtm = new RtmClient(botToken, {
     logLevel: 'error',
     dataStore: new MemoryDataStore(),
@@ -208,7 +210,7 @@ function startBot(teamId, botToken) {
   bots.push(rtm);
 }
 
-function initSlack(teamId) {
+export function initSlack(teamId) {
   return getTeam(teamId)
     .then(team => {
       const SLACK_BOT_TOKEN = team.sys.bot.bot_access_token;
@@ -219,15 +221,13 @@ function initSlack(teamId) {
     .catch(err => logger.error(err));
 }
 
-function stopBot(teamId) {
+export function stopBot(teamId) {
   const rtm = rtmForTeam(teamId);
   rtm.disconnect();
 }
 
-function restartBot(teamId) {
+export function restartBot(teamId) {
   const rtm = rtmForTeam(teamId);
   rtm.disconnect();
   rtm.start();
 }
-
-module.exports = { initSlack, stopBot, restartBot, rtmForTeam, apiForTeam };

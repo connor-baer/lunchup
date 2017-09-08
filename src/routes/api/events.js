@@ -1,7 +1,7 @@
-const logger = require('../../lib/logger');
-const express = require('express');
-const { sendResponse } = require('../../lib/interactions');
-const { config } = require('../../../config.json');
+import express from 'express';
+import logger from '../../lib/logger';
+import { sendResponse } from '../../lib/interactions';
+import { config } from '../../../config.json';
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 
@@ -46,4 +46,4 @@ router.post('/', (req, res) => {
   }
 });
 
-module.exports = router;
+export { router as events };

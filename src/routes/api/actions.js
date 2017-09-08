@@ -1,14 +1,9 @@
-const express = require('express');
-const logger = require('../../lib/logger');
-const MESSAGE = require('../../lib/messages');
-const { sendResponse } = require('../../lib/interactions');
-const {
-  addUser,
-  updateUser,
-  removeUser,
-  getLocations
-} = require('../../lib/db');
-const { config } = require('../../../config.json');
+import express from 'express';
+import logger from '../../lib/logger';
+import MESSAGE from '../../lib/messages';
+import { sendResponse } from '../../lib/interactions';
+import { addUser, updateUser, removeUser, getLocations } from '../../lib/db';
+import { config } from '../../../config.json';
 
 const { SLACK_VERIFICATION_TOKEN } = config;
 
@@ -122,4 +117,4 @@ router.post('/', (req, res) => {
   }
 });
 
-module.exports = router;
+export { router as actions };

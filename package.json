@@ -14,28 +14,27 @@
   },
   "homepage": "https://github.com/connor-baer/lunchup#readme",
   "scripts": {
-    "build": "npm run prebuild && NODE_ENV=production webpack --config webpack.config.js",
+    "build":
+      "npm run prebuild && NODE_ENV=production webpack --config webpack.config.js",
+    "clean": "rm -rf ./dist",
     "fix": "npm run fix:prettier; npm run fix:eslint; npm run fix:stylelint",
     "fix:eslint": "eslint --fix --quiet \"**/*.js\" \"**/*.js\"",
     "fix:prettier": "prettier --single-quote --write \"**/*.js\" \"**/*.js\"",
-    "fix:stylelint": "stylelint \"src/**/*.scss\" --syntax scss --config stylelint.config.js --fix",
-    "prebuild": "rm -rf ./dist",
-    "start": "npm run prebuild && webpack --config webpack.config.js --display-error-details",
+    "fix:stylelint":
+      "stylelint \"src/**/*.scss\" --syntax scss --config stylelint.config.js --fix",
+    "prebuild": "npm run clean",
+    "start":
+      "npm run prebuild && webpack --config webpack.config.js --display-error-details",
     "precommit": "lint-staged",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "lint-staged": {
-    "*.js": [
-      "npm run fix:prettier",
-      "git add"
-    ],
-    "*.scss": [
-      "npm run fix:stylelint",
-      "git add"
-    ]
+    "*.js": ["npm run fix:prettier", "git add"],
+    "*.scss": ["npm run fix:stylelint", "git add"]
   },
   "dependencies": {
     "@slack/client": "^3.10.0",
+    "ajv": "^5.2.2",
     "async": "^2.5.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -54,10 +53,12 @@
     "moment": "^2.18.1",
     "morgan": "^1.8.2",
     "request": "^2.81.0",
+    "start-server-webpack-plugin": "^2.2.0",
     "twig": "^1.10.5",
     "utf-8-validate": "^3.0.3",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0",
+    "webpack-node-externals": "^1.6.0",
     "winston": "^2.3.1"
   },
   "devDependencies": {

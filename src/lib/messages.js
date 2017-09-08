@@ -1,4 +1,4 @@
-const { color } = require('../../config.json');
+import { color } from '../../config.json';
 
 const join = () => [
   {
@@ -105,4 +105,4 @@ const location = options => [
   }
 ];
 
-module.exports = { join, snooze, leave, location };
+export { join, snooze, leave, location };

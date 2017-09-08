@@ -1,15 +1,9 @@
-const { crypto } = require('crypto');
-const logger = require('./logger');
-const { apiForTeam } = require('./slack');
-const {
-  updateUser,
-  getLocations,
-  hasMatch,
-  addMatch,
-  getMatches
-} = require('./db');
+import { crypto } from 'crypto';
+import logger from './logger';
+import { apiForTeam } from './slack';
+import { updateUser, getLocations, hasMatch, addMatch, getMatches } from './db';
 
-function updateUsers(teamId, users) {
+export function updateUsers(teamId, users) {
   const today = new Date();
   users.map(user => {
     if (
@@ -28,7 +22,7 @@ function updateUsers(teamId, users) {
   return users.filter(user => user.active);
 }
 
-function groupUsers(teamId, users) {
+export function groupUsers(teamId, users) {
   return getLocations(teamId).then(locations =>
     locations.map(location => ({
       location,
@@ -37,7 +31,7 @@ function groupUsers(teamId, users) {
   );
 }
 
-function matchUsers(teamId, users) {
+export function matchUsers(teamId, users) {
   return new Promise((resolve, reject) => {
     if (users.length < 2) {
       return reject('There are not enough users.');
@@ -72,7 +66,7 @@ function matchUsers(teamId, users) {
   });
 }
 
-function notifyUsers(teamId, userIds) {
+export function notifyUsers(teamId, userIds) {
   const users = userIds.join(',');
   const api = apiForTeam(teamId);
   api.mpim.open(users, (err, res) => {
@@ -87,10 +81,3 @@ function notifyUsers(teamId, userIds) {
     );
   });
 }
-
-module.exports = {
-  updateUsers,
-  groupUsers,
-  matchUsers,
-  notifyUsers
-};

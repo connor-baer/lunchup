@@ -1,13 +1,18 @@
 const path = require('path');
 const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
+const StartServerPlugin = require('start-server-webpack-plugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
 const plugins = isDev
   ? [
+      new StartServerPlugin({
+        name: 'app.js',
+        nodeArgs: ['--inspect'] // enable debugging
+      }),
       new webpack.NamedModulesPlugin(),
       new webpack.optimize.ModuleConcatenationPlugin(),
-      new webpack.HotModuleReplacementPlugin(),
       new webpack.DefinePlugin({
         'process.env': {
           BUILD_TARGET: JSON.stringify('app'),
@@ -29,6 +34,7 @@ module.exports = {
   entry: './src/index.js',
   watch: isDev,
   target: 'node',
+  externals: nodeExternals(),
   module: {
     rules: [
       {
