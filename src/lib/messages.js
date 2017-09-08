@@ -1,6 +1,6 @@
-import { color } from '../colors';
+import { color } from './colors';
 
-const join = () => [
+export const join = () => [
   {
     text: 'Would you like to take part?',
     fallback: 'You are currently unable to participate.',
@@ -25,7 +25,7 @@ const join = () => [
   }
 ];
 
-const snooze = () => [
+export const snooze = () => [
   {
     text: 'Choose the number of weeks.',
     fallback: 'Something went wrong.',
@@ -62,7 +62,7 @@ const snooze = () => [
   }
 ];
 
-const leave = () => [
+export const leave = () => [
   {
     text: 'Confirm that you want to leave below.',
     fallback: 'Something went wrong.',
@@ -87,7 +87,7 @@ const leave = () => [
   }
 ];
 
-const location = options => [
+export const location = options => [
   {
     text: 'Where do you work?',
     fallback: 'You are currently unable to pick a location',
@@ -104,5 +104,3 @@ const location = options => [
     ]
   }
 ];
-
-export { join, snooze, leave, location };

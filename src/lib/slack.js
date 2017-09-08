@@ -5,7 +5,7 @@ import {
   MemoryDataStore,
   RTM_EVENTS
 } from '@slack/client';
-import MESSAGE from './messages';
+import * as MESSAGE from './messages';
 import { contains } from './helpers';
 import { getTeam, getLocations } from './db';
 import logger from './logger';
