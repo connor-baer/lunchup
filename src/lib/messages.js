@@ -1,11 +1,11 @@
-import { color } from './colors';
+import { colors } from './colors';
 
 export const join = () => [
   {
     text: 'Would you like to take part?',
     fallback: 'You are currently unable to participate.',
     callback_id: 'join',
-    color: color.primary,
+    color: colors.primary,
     attachment_type: 'default',
     actions: [
       {
@@ -30,7 +30,7 @@ export const snooze = () => [
     text: 'Choose the number of weeks.',
     fallback: 'Something went wrong.',
     callback_id: 'snooze',
-    color: color.primary,
+    color: colors.primary,
     attachment_type: 'default',
     actions: [
       {
@@ -67,7 +67,7 @@ export const leave = () => [
     text: 'Confirm that you want to leave below.',
     fallback: 'Something went wrong.',
     callback_id: 'leave',
-    color: color.primary,
+    color: colors.primary,
     attachment_type: 'default',
     actions: [
       {
@@ -91,7 +91,7 @@ export const location = options => [
   {
     text: 'Where do you work?',
     fallback: 'You are currently unable to pick a location',
-    color: color.primary,
+    color: colors.primary,
     attachment_type: 'default',
     callback_id: 'location',
     actions: [
