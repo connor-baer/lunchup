@@ -1,11 +1,11 @@
-import { color } from '../../config.json';
+import { color } from '../colors';
 
 const join = () => [
   {
     text: 'Would you like to take part?',
     fallback: 'You are currently unable to participate.',
     callback_id: 'join',
-    color,
+    color: color.primary,
     attachment_type: 'default',
     actions: [
       {
@@ -30,7 +30,7 @@ const snooze = () => [
     text: 'Choose the number of weeks.',
     fallback: 'Something went wrong.',
     callback_id: 'snooze',
-    color,
+    color: color.primary,
     attachment_type: 'default',
     actions: [
       {
@@ -67,7 +67,7 @@ const leave = () => [
     text: 'Confirm that you want to leave below.',
     fallback: 'Something went wrong.',
     callback_id: 'leave',
-    color,
+    color: color.primary,
     attachment_type: 'default',
     actions: [
       {
@@ -91,7 +91,7 @@ const location = options => [
   {
     text: 'Where do you work?',
     fallback: 'You are currently unable to pick a location',
-    color,
+    color: color.primary,
     attachment_type: 'default',
     callback_id: 'location',
     actions: [
