@@ -60,7 +60,7 @@ export function startBot(teamId, botToken) {
 
     api.chat.postMessage(
       channel,
-      `Hello! <@${rtm.activeUserId}> matches up two random coworkers every week to go on a blind lunch.`,
+      `Hello! <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`,
       MESSAGE.join(),
       (err, res) => {
         if (err) {
@@ -101,7 +101,7 @@ export function startBot(teamId, botToken) {
       ]): {
         api.chat.postMessage(
           channel,
-          `Hi <@${user}>! 👋 <@${rtm.activeUserId}> matches up two random coworkers every week to go on a blind lunch.`,
+          `Hi <@${user}>! 👋 <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`,
           {
             thread_ts,
             response_type: 'ephermal',
