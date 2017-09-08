@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "nodemon --inspect app.js --ignore 'data/*'",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/connor-baer/lunchup.git"
@@ -17,6 +13,20 @@
     "url": "https://github.com/connor-baer/lunchup/issues"
   },
   "homepage": "https://github.com/connor-baer/lunchup#readme",
+  "scripts": {
+    "fix": "npm run fix:prettier; npm run fix:eslint; npm run fix:stylelint",
+    "fix:eslint": "eslint --fix --quiet \"**/*.js\" \"**/*.js\"",
+    "fix:prettier": "prettier --single-quote --write \"**/*.js\" \"**/*.js\"",
+    "fix:stylelint":
+      "stylelint \"src/**/*.scss\" --syntax scss --config stylelint.config.js --fix",
+    "start": "nodemon --inspect app.js --ignore 'data/*'",
+    "precommit": "lint-staged",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "lint-staged": {
+    "*.js": ["npm run fix:prettier", "git add"],
+    "*.scss": ["npm run fix:stylelint", "git add"]
+  },
   "dependencies": {
     "@slack/client": "^3.10.0",
     "async": "^2.5.0",
@@ -35,6 +45,20 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "eslint": "^4.6.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-config-prettier": "^2.3.0",
+    "eslint-formatter-pretty": "^1.1.0",
+    "eslint-import-resolver-webpack": "^0.8.3",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-prettier": "^2.1.2",
+    "eslint-plugin-react": "^7.3.0",
+    "husky": "^0.13.4",
+    "lint-staged": "^3.6.0",
+    "nodemon": "^1.11.0",
+    "prettier": "^1.4.1"
   }
 }

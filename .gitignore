@@ -1,6 +1,7 @@
 # Project specific
 config.json
 data/*
+package-lock.json
 
 # Logs
 logs
