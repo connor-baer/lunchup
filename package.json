@@ -17,11 +17,9 @@
     "build":
       "npm run prebuild && NODE_ENV=production webpack --config webpack.config.js",
     "clean": "rm -rf ./dist",
-    "fix": "npm run fix:prettier; npm run fix:eslint; npm run fix:stylelint",
+    "fix": "npm run fix:prettier; npm run fix:eslint",
     "fix:eslint": "eslint --fix --quiet \"**/*.js\" \"**/*.js\"",
     "fix:prettier": "prettier --single-quote --write \"**/*.js\" \"**/*.js\"",
-    "fix:stylelint":
-      "stylelint \"src/**/*.scss\" --syntax scss --config stylelint.config.js --fix",
     "prebuild": "npm run clean",
     "start":
       "npm run prebuild && webpack --config webpack.config.js --display-error-details",
@@ -29,8 +27,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "lint-staged": {
-    "*.js": ["npm run fix:prettier", "git add"],
-    "*.scss": ["npm run fix:stylelint", "git add"]
+    "*.js": ["npm run fix:prettier", "git add"]
   },
   "dependencies": {
     "@slack/client": "^3.10.0",
