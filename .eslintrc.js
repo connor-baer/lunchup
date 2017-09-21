@@ -20,7 +20,6 @@ module.exports = {
         singleQuote: true
       }
     ],
-    'jsx-a11y/href-no-hash': 'off',
     'import/prefer-default-export': 0
   },
   globals: {

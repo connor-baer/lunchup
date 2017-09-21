@@ -8,26 +8,26 @@ describe('contains should', () => {
 
   it('return false when no parameters are provided', () => {
     const result = contains();
-    expect(result).toBeFalsy();
+    return expect(result).toBeFalsy();
   });
 
   it('return false when only message is provided', () => {
     const result = contains(messageText, undefined);
-    expect(result).toBeFalsy();
+    return expect(result).toBeFalsy();
   });
 
   it('return false when only words are provided', () => {
     const result = contains(undefined, wordsToMatch);
-    expect(result).toBeFalsy();
+    return expect(result).toBeFalsy();
   });
 
   it('return false when message does not contain words', () => {
     const result = contains(messageText, wordsNotToMatch);
-    expect(result).toBeFalsy();
+    return expect(result).toBeFalsy();
   });
 
   it('return true when message contains words', () => {
     const result = contains(messageText, wordsToMatch);
-    expect(result).toBeTruthy();
+    return expect(result).toBeTruthy();
   });
 });
