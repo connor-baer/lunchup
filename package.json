@@ -2,7 +2,7 @@
   "name": "lunchup",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/app.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/connor-baer/lunchup.git"
@@ -18,8 +18,8 @@
       "npm run prebuild && NODE_ENV=production webpack --config webpack.config.js",
     "clean": "rm -rf ./dist",
     "fix": "npm run fix:prettier; npm run fix:eslint",
-    "fix:eslint": "eslint --fix --quiet \"**/*.js\" \"**/*.js\"",
-    "fix:prettier": "prettier --single-quote --write \"**/*.js\" \"**/*.js\"",
+    "fix:eslint": "eslint --fix --quiet \"**/*.js\"",
+    "fix:prettier": "prettier --config prettier.config.js --write \"**/*.js\"",
     "prebuild": "npm run clean",
     "start":
       "npm run prebuild && webpack --config webpack.config.js --display-error-details",
