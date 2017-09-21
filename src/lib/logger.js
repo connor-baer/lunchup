@@ -51,7 +51,7 @@ function createTimestamp(format = 'HH:mm:ss') {
 const logger = new Logger({ transports });
 
 logger.stream = {
-  write(message, encoding) {
+  write(message) {
     logger.info(message);
   }
 };

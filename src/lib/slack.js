@@ -60,9 +60,9 @@ export function startBot(teamId, botToken) {
 
     api.chat.postMessage(
       channel,
-      `Hello! <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`,
+      `Hello! <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`, // eslint-disable-line max-len
       MESSAGE.join(),
-      (err, res) => {
+      err => {
         if (err) {
           logger.error(err);
         }
@@ -74,7 +74,7 @@ export function startBot(teamId, botToken) {
     const { channel, user, text, subtype, bot_id, thread_ts } = message;
 
     if (
-      bot_id ||
+      bot_id || // eslint-disable-line camelcase
       subtype ||
       !text ||
       (!contains(text, [`<@${rtm.activeUserId}>`]) && channel[0] !== 'D')
@@ -101,14 +101,14 @@ export function startBot(teamId, botToken) {
       ]): {
         api.chat.postMessage(
           channel,
-          `Hi <@${user}>! 👋 <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`,
+          `Hi <@${user}>! 👋 <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`, // eslint-disable-line max-len
           {
             thread_ts,
             response_type: 'ephermal',
             as_user: false,
             attachments: MESSAGE.join()
           },
-          (err, res) => {
+          err => {
             if (err) {
               logger.error(err);
             }
@@ -126,7 +126,7 @@ export function startBot(teamId, botToken) {
             as_user: false,
             attachments: MESSAGE.snooze()
           },
-          (err, res) => {
+          err => {
             if (err) {
               logger.error(err);
             }
@@ -137,14 +137,14 @@ export function startBot(teamId, botToken) {
       case contains(text, ['leave', 'sign out', 'opt out', 'stop', 'bye']): {
         api.chat.postMessage(
           channel,
-          `Are you sure you want to leave? You can also take a break. Just ask me (<@${rtm.activeUserId}>).`,
+          `Are you sure you want to leave? You can also take a break. Just ask me (<@${rtm.activeUserId}>).`, // eslint-disable-line max-len
           {
             thread_ts,
             response_type: 'ephermal',
             as_user: false,
             attachments: MESSAGE.leave()
           },
-          (err, res) => {
+          err => {
             if (err) {
               logger.error(err);
             }
@@ -167,7 +167,7 @@ export function startBot(teamId, botToken) {
               as_user: false,
               attachments: MESSAGE.location(locationOptions)
             },
-            (err, res) => {
+            err => {
               if (err) {
                 logger.error(err);
               }
@@ -184,7 +184,7 @@ export function startBot(teamId, botToken) {
         'question'
       ]): {
         rtm.send({
-          text: `Hi, my name is <@${rtm.activeUserId}>! 👋 I match up two random coworkers every week to go on a blind lunch. You can *join*, *take a break*, *leave*, or *update your location*. Just send me a message that includes one of these keywords or a similar one.`,
+          text: `Hi, my name is <@${rtm.activeUserId}>! 👋 I match up two random coworkers every week to go on a blind lunch. You can *join*, *take a break*, *leave*, or *update your location*. Just send me a message that includes one of these keywords or a similar one.`, // eslint-disable-line max-len
           channel,
           thread_ts,
           type: RTM_EVENTS.MESSAGE
@@ -202,7 +202,7 @@ export function startBot(teamId, botToken) {
       }
       default: {
         rtm.send({
-          text: `I'm sorry <@${user}>, I couldn't understand your message. Sometimes I have an easier time with a few simple keywords.`,
+          text: `I'm sorry <@${user}>, I couldn't understand your message. Sometimes I have an easier time with a few simple keywords.`, // eslint-disable-line max-len
           channel,
           thread_ts,
           type: RTM_EVENTS.MESSAGE

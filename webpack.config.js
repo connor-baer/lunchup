@@ -9,7 +9,7 @@ const plugins = isDev
   ? [
       new StartServerPlugin({
         name: 'app.js',
-        nodeArgs: ['--inspect'] // enable debugging
+        nodeArgs: ['--inspect']
       }),
       new webpack.NamedModulesPlugin(),
       new webpack.optimize.ModuleConcatenationPlugin(),

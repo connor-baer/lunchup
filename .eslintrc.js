@@ -1,11 +1,6 @@
 module.exports = {
-  extends: [
-    'airbnb-base',
-    'plugin:react/recommended',
-    'prettier',
-    'prettier/react'
-  ],
-  plugins: ['react', 'prettier'],
+  extends: ['airbnb-base', 'prettier'],
+  plugins: ['prettier'],
   rules: {
     'no-use-before-define': ['error', { functions: false }],
     'no-underscore-dangle': 'off',
@@ -25,7 +20,6 @@ module.exports = {
         singleQuote: true
       }
     ],
-    'react/prop-types': [1, { ignore: ['i18n'] }],
     'jsx-a11y/href-no-hash': 'off',
     'import/prefer-default-export': 0
   },
@@ -42,17 +36,17 @@ module.exports = {
     allowImportExportEverywhere: true,
     ecmaFeatures: {
       ecmaVersion: 2017,
-      impliedStrict: true,
-      jsx: true
+      impliedStrict: true
     }
   },
   env: {
-    browser: true
+    browser: true,
+    jest: true
   },
   settings: {
     'import/resolver': {
       webpack: {
-        config: 'webpack.config.client.js'
+        config: 'webpack.config.js'
       }
     }
   }

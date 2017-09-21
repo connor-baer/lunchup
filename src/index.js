@@ -13,14 +13,13 @@ import { commands } from './routes/api/commands';
 import { actions } from './routes/api/actions';
 
 const port = process.env.PORT || 8080;
+const app = express();
 
 getTeams().then(teams =>
   teams.forEach(team => {
     initSlack(team.id);
   })
 );
-
-const app = express();
 
 // view engine setup
 app.set('views', 'views');
