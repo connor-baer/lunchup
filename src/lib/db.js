@@ -199,7 +199,7 @@ export function removeLocation(teamId, location) {
 }
 
 export function getLocations(teamId) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const locations = db
       .get('teams')
       .find({ id: teamId })

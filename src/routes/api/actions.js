@@ -1,6 +1,6 @@
 import express from 'express';
 import logger from '../../lib/logger';
-import MESSAGE from '../../lib/messages';
+import * as MESSAGE from '../../lib/messages';
 import { sendResponse } from '../../lib/interactions';
 import { addUser, updateUser, removeUser, getLocations } from '../../lib/db';
 import { config } from '../../../config.json';
@@ -41,7 +41,7 @@ router.post('/', (req, res) => {
           sendResponse(response_url, {
             response_type: 'ephermal',
             text:
-              "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.",
+              "🎉  Awesome! Lunch breaks are too short for ✈️, so I'll try to match you with colleagues near you.", // eslint-disable-line max-len
             replace_original: false,
             attachments: MESSAGE.location(locationOptions)
           });
@@ -52,7 +52,7 @@ router.post('/', (req, res) => {
       sendResponse(response_url, {
         response_type: 'ephermal',
         text:
-          '😔 Alright. Should you change your mind in the future, send me a message @lunchup.',
+          '😔 Alright. Should you change your mind in the future, send me a message @lunchup.', // eslint-disable-line max-len
         replace_original: false
       });
       break;
@@ -74,7 +74,7 @@ router.post('/', (req, res) => {
       updateUser(team.id, user.id, { active: false, timestamp });
       sendResponse(response_url, {
         response_type: 'ephermal',
-        text: `🗓 Alright! I'll include you again in ${action.value} ${singOrPlur}.`,
+        text: `🗓 Alright! I'll include you again in ${action.value} ${singOrPlur}.`, // eslint-disable-line max-len
         replace_original: true
       });
       break;

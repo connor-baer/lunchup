@@ -111,7 +111,7 @@ router.get('/', (req, res) => {
         }
       ]
     },
-    (err, results) => {
+    err => {
       if (err) {
         res.render('api/auth', {
           title: '🚨 Failure',

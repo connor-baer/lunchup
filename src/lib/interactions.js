@@ -11,7 +11,7 @@ export function sendResponse(responseURL, JSONmessage) {
     json: JSONmessage
   };
 
-  request(postOptions, (error, response, body) => {
+  request(postOptions, (error, response) => {
     if (error) {
       logger.info(response);
       return;

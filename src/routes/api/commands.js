@@ -115,7 +115,7 @@ router.post('/', (req, res) => {
                   .join(', ');
                 sendResponse(response_url, {
                   response_type: 'ephermal',
-                  text: `ℹ️ There are ${numberOfLocations} locations: ${locationNames}.`
+                  text: `ℹ️ There are ${numberOfLocations} locations: ${locationNames}.` // eslint-disable-line max-len
                 });
               })
               .catch(err => {

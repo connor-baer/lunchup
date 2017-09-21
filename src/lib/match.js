@@ -77,7 +77,7 @@ export function notifyUsers(teamId, userIds) {
     const channel = res.group.id;
     api.chat.postMessage(
       channel,
-      'Hello there! This is your blind lunch partner for this week. Have a lovely time and enjoy your meal! 🍽'
+      'Hello there! This is your blind lunch partner for this week. Have a lovely time and enjoy your meal! 🍽' // eslint-disable-line max-len
     );
   });
 }

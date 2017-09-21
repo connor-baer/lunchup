@@ -2,7 +2,7 @@ import { contains } from './helpers';
 
 describe('contains should', () => {
   const messageText =
-    'Bacon ipsum dolor amet t-bone ground round bresaola beef ham hock capicola jowl tongue fatback. Tri-tip prosciutto meatball ground round andouille, sausage swine cupim alcatra corned beef shank tenderloin.';
+    'Bacon ipsum dolor amet t-bone ground round bresaola beef ham hock capicola jowl tongue fatback. Tri-tip prosciutto meatball ground round andouille, sausage swine cupim alcatra corned beef shank tenderloin.'; // eslint-disable-line max-len
   const wordsToMatch = ['bacon', 'sandwich', 'steak'];
   const wordsNotToMatch = ['carrot', 'apple', 'yoghurt'];
 

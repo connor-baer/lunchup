@@ -14,25 +14,25 @@
   },
   "homepage": "https://github.com/connor-baer/lunchup#readme",
   "scripts": {
-    "build": "npm run prebuild && NODE_ENV=production webpack --config webpack.config.js",
+    "build":
+      "npm run prebuild && NODE_ENV=production webpack --config webpack.config.js",
     "clean": "rm -rf ./dist",
     "fix": "npm run fix:prettier; npm run fix:eslint",
-    "fix:eslint": "eslint --fix --quiet \"**/*.js\"",
-    "fix:prettier": "prettier --config prettier.config.js --write \"**/*.js\"",
+    "fix:eslint": "eslint --fix --quiet \"src/**/*.js\"",
+    "fix:prettier":
+      "prettier --config prettier.config.js --write \"src/**/*.js\"",
     "prebuild": "npm run clean",
-    "start": "npm run prebuild && webpack --config webpack.config.js --display-error-details",
+    "start":
+      "npm run prebuild && webpack --config webpack.config.js --display-error-details",
     "precommit": "lint-staged",
     "test": "npm run test:lint-js --silent && npm run test:unit --silent",
-    "test:lint-js": "eslint --cache --quiet **/*.js",
+    "test:lint-js": "eslint --cache --quiet src/**/*.js",
     "test:lint-js:watch": "onchange \"**/*.js\" -- npm run test:lint-js",
     "test:unit": "jest",
     "test:unit:watch": "jest --watch"
   },
   "lint-staged": {
-    "*.js": [
-      "npm run fix:prettier",
-      "git add"
-    ]
+    "*.js": ["npm run fix:prettier", "git add"]
   },
   "dependencies": {
     "@slack/client": "^3.10.0",
@@ -64,6 +64,7 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
+    "babel-eslint": "^8.0.0",
     "eslint": "^4.6.1",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-config-airbnb-base": "^11.3.1",
