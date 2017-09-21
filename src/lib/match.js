@@ -1,9 +1,14 @@
 import { crypto } from 'crypto';
+import { isEmpty } from 'lodash';
 import logger from './logger';
 import { apiForTeam } from './slack';
 import { updateUser, getLocations, hasMatch, addMatch, getMatches } from './db';
 
 export function updateUsers(teamId, users) {
+  if (!teamId || isEmpty(users)) {
+    return null;
+  }
+
   const today = new Date();
   users.map(user => {
     if (

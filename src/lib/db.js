@@ -1,16 +1,15 @@
 import low from 'lowdb';
-import { find, filter } from 'lodash';
+import { find, filter, isEmpty } from 'lodash';
 import fileAsync from 'lowdb/lib/storages/file-async';
 import Cryptr from 'cryptr';
 
 import { cryptrKey } from '../../config.json';
 
-const cryptr = new Cryptr(cryptrKey);
+let format;
 
-const folder = 'data/';
-const db = low(`${folder}db.json`, {
-  storage: fileAsync,
-  format: {
+if (cryptrKey) {
+  const cryptr = new Cryptr(cryptrKey);
+  format = {
     deserialize: str => {
       const decrypted = cryptr.decrypt(str);
       const obj = JSON.parse(decrypted);
@@ -21,7 +20,13 @@ const db = low(`${folder}db.json`, {
       const encrypted = cryptr.encrypt(str);
       return encrypted;
     }
-  }
+  };
+}
+
+const folder = 'data/';
+const db = low(`${folder}db.json`, {
+  storage: fileAsync,
+  format
 });
 
 db
@@ -36,6 +41,14 @@ export function addTeam(teamId, teamInfo) {
   }
 
   return new Promise((resolve, reject) => {
+    if (!teamId) {
+      return reject('Team id not provided.');
+    }
+
+    if (isEmpty(teamInfo)) {
+      return reject('Team info not provided.');
+    }
+
     const newTeam = {
       id: teamId,
       sys: teamInfo,
@@ -48,19 +61,27 @@ export function addTeam(teamId, teamInfo) {
       .get('teams')
       .push(newTeam)
       .write()
-      .then(() => resolve())
+      .then(() => resolve(true))
       .catch(err => reject(err));
   });
 }
 
 export function updateTeam(teamId, teamInfo) {
   return new Promise((resolve, reject) => {
+    if (!teamId) {
+      return reject('Team id not provided.');
+    }
+
+    if (isEmpty(teamInfo)) {
+      return reject('Team info not provided.');
+    }
+
     db
       .get('teams')
       .find({ id: teamId })
       .assign({ sys: teamInfo })
       .write()
-      .then(() => resolve())
+      .then(() => resolve(true))
       .catch(err => reject(err));
   });
 }
