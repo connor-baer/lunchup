@@ -5,10 +5,10 @@ import {
   MemoryDataStore,
   RTM_EVENTS
 } from '@slack/client';
-import * as MESSAGE from './messages';
-import { contains } from './helpers';
-import { getTeam, getLocations } from './db';
-import logger from './logger';
+import { contains } from '../util/contains';
+import logger from '../util/logger';
+import * as MESSAGE from '../constants/messages';
+import * as DB from './db';
 
 const apis = [];
 const bots = [];
@@ -153,7 +153,7 @@ export function startBot(teamId, botToken) {
         break;
       }
       case contains(text, ['location', 'city', 'office', 'place']): {
-        getLocations(teamId).then(locations => {
+        DB.getLocations(teamId).then(locations => {
           const locationOptions = locations.map(location => ({
             text: decodeURI(location.city),
             value: location.city
@@ -217,7 +217,7 @@ export function startBot(teamId, botToken) {
 }
 
 export function initSlack(teamId) {
-  return getTeam(teamId)
+  return DB.getTeam(teamId)
     .then(team => {
       const SLACK_BOT_TOKEN = team.sys.bot.bot_access_token;
 

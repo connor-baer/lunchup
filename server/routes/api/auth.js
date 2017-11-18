@@ -1,9 +1,9 @@
 import express from 'express';
 import request from 'request';
 import async from 'async';
-import logger from '../../lib/logger';
-import { addTeam } from '../../lib/db';
-import { initSlack } from '../../lib/slack';
+import logger from '../../util/logger';
+import * as DB from '../../services/db';
+import * as SLACK from '../../services/slack';
 import { config } from '../../../config.json';
 
 const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT } = config;
@@ -99,9 +99,9 @@ router.get('/', (req, res) => {
             access_token: auth.access_token
           };
 
-          addTeam(team.id, team)
+          DB.addTeam(team.id, team)
             .then(() => {
-              initSlack(team.id);
+              SLACK.initSlack(team.id);
               return callback(null, team);
             })
             .catch(err => {

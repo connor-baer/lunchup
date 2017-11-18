@@ -1,8 +1,8 @@
 import { crypto } from 'crypto';
 import { isEmpty } from 'lodash';
-import logger from './logger';
-import { apiForTeam } from './slack';
-import { updateUser, getLocations, hasMatch, addMatch, getMatches } from './db';
+import logger from '../util/logger';
+import * as SLACK from './slack';
+import * as DB from './db';
 
 export function updateUsers(teamId, users) {
   if (!teamId || isEmpty(users)) {
@@ -15,7 +15,7 @@ export function updateUsers(teamId, users) {
       user.timestamp !== false &&
       new Date(user.timestamp).getTime() < today.getTime()
     ) {
-      updateUser(teamId, user.id, {
+      DB.updateUser(teamId, user.id, {
         active: true,
         timestamp: false
       });
@@ -28,7 +28,7 @@ export function updateUsers(teamId, users) {
 }
 
 export function groupUsers(teamId, users) {
-  return getLocations(teamId).then(locations =>
+  return DB.getLocations(teamId).then(locations =>
     locations.map(location => ({
       location,
       users: users.filter(user => user.location === location)
@@ -60,20 +60,20 @@ export function matchUsers(teamId, users) {
 
       const match = { timestamp, id, users: [person1, person2] };
 
-      if (!hasMatch(teamId, id)) {
-        addMatch(teamId, match);
+      if (!DB.hasMatch(teamId, id)) {
+        DB.addMatch(teamId, match);
         usersLeft = usersLeft.filter(
           value => value.id !== person1 && value.id !== person2
         );
       }
     }
-    return resolve(getMatches(teamId, timestamp));
+    return resolve(DB.getMatches(teamId, timestamp));
   });
 }
 
 export function notifyUsers(teamId, userIds) {
   const users = userIds.join(',');
-  const api = apiForTeam(teamId);
+  const api = SLACK.apiForTeam(teamId);
   api.mpim.open(users, (err, res) => {
     if (err) {
       logger.error(err);

@@ -1,10 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
-import logger from './lib/logger';
+import logger from './util/logger';
 
-import { getTeams } from './lib/db';
-import { initSlack } from './lib/slack';
+import { getTeams } from './services/db';
+import { initSlack } from './services/slack';
 
 import { index } from './routes/index';
 import { auth } from './routes/api/auth';

@@ -1,6 +1,6 @@
 import express from 'express';
-import logger from '../../lib/logger';
-import { sendResponse } from '../../lib/interactions';
+import logger from '../../util/logger';
+import { sendResponse } from '../../services/interactions';
 import { config } from '../../../config.json';
 
 const { SLACK_VERIFICATION_TOKEN } = config;

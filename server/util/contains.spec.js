@@ -1,4 +1,4 @@
-import { contains } from './helpers';
+import { contains } from './contains';
 
 describe('contains should', () => {
   const messageText =

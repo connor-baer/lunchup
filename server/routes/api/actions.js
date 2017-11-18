@@ -1,8 +1,8 @@
 import express from 'express';
-import logger from '../../lib/logger';
-import * as MESSAGE from '../../lib/messages';
-import { sendResponse } from '../../lib/interactions';
-import { addUser, updateUser, removeUser, getLocations } from '../../lib/db';
+import logger from '../../util/logger';
+import * as MESSAGE from '../../constants/messages';
+import { sendResponse } from '../../services/interactions';
+import * as DB from '../../services/db';
 import { config } from '../../../config.json';
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join': {
       if (action.value === 'true') {
-        getLocations(team.id).then(locations => {
+        DB.getLocations(team.id).then(locations => {
           const locationOptions = locations.map(location => ({
             text: decodeURI(location.city),
             value: location.city
@@ -48,7 +48,7 @@ router.post('/', (req, res) => {
         });
         break;
       }
-      removeUser(team.id, user.id);
+      DB.removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text:
@@ -59,7 +59,7 @@ router.post('/', (req, res) => {
     }
     case 'snooze': {
       if (action.value === 'false') {
-        updateUser(team.id, user.id, { active: true, timestamp: false });
+        DB.updateUser(team.id, user.id, { active: true, timestamp: false });
         sendResponse(response_url, {
           response_type: 'ephermal',
           text: "👍 Cool! I'll include you again.",
@@ -71,7 +71,7 @@ router.post('/', (req, res) => {
         +new Date() + 1000 * 60 * 60 * 24 * 7 * Number(action.value)
       );
       const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
-      updateUser(team.id, user.id, { active: false, timestamp });
+      DB.updateUser(team.id, user.id, { active: false, timestamp });
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗓 Alright! I'll include you again in ${action.value} ${singOrPlur}.`, // eslint-disable-line max-len
@@ -88,7 +88,7 @@ router.post('/', (req, res) => {
         });
         break;
       }
-      removeUser(team.id, user.id);
+      DB.removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: "😢 Noooooo! Fine, I've removed you from the list.",
@@ -99,7 +99,7 @@ router.post('/', (req, res) => {
     case 'location': {
       const location = action.selected_options[0].value;
       const userWithLocation = Object.assign(user, { location });
-      addUser(team.id, userWithLocation);
+      DB.addUser(team.id, userWithLocation);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗺 ${location}, nice! I've updated your location.`,

@@ -31,7 +31,7 @@ const plugins = isDev
     ];
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './server/index.js',
   watch: isDev,
   target: 'node',
   externals: nodeExternals(),
@@ -42,7 +42,6 @@ module.exports = {
         use: 'babel-loader',
         include: [
           path.join(__dirname, 'server'),
-          path.join(__dirname, 'src'),
           path.join(__dirname, 'config.js')
         ]
       }

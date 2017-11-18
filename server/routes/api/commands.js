@@ -1,19 +1,9 @@
 import express from 'express';
-import logger from '../../lib/logger';
-import { sendResponse } from '../../lib/interactions';
-import {
-  getUsers,
-  addLocation,
-  removeLocation,
-  getLocations
-} from '../../lib/db';
-import { stopBot, restartBot } from '../../lib/slack';
-import {
-  updateUsers,
-  groupUsers,
-  matchUsers,
-  notifyUsers
-} from '../../lib/match';
+import logger from '../../util/logger';
+import { sendResponse } from '../../services/interactions';
+import * as DB from '../../services/db';
+import * as SLACK from '../../services/slack';
+import * as MATCH from '../../services/match';
 import { config } from '../../../config.json';
 
 const { SLACK_VERIFICATION_TOKEN } = config;
@@ -48,7 +38,7 @@ router.post('/', (req, res) => {
   if (command === '/lunchup') {
     switch (words[0]) {
       case 'users':
-        getUsers(team_id)
+        DB.getUsers(team_id)
           .then(users => {
             const numberOfUsers = users.length;
             const userNames = users.map(user => user.name).join(', ');
@@ -66,13 +56,13 @@ router.post('/', (req, res) => {
           });
         break;
       case 'match': {
-        getUsers(team_id)
-          .then(users => updateUsers(team_id, users))
-          .then(activeUsers => groupUsers(team_id, activeUsers))
+        DB.getUsers(team_id)
+          .then(users => MATCH.updateUsers(team_id, users))
+          .then(activeUsers => MATCH.groupUsers(team_id, activeUsers))
           .then(groupedUsers => {
             const matching = groupedUsers.map(group =>
-              matchUsers(team_id, group.users).then(matches =>
-                matches.map(match => notifyUsers(team_id, match.users))
+              MATCH.matchUsers(team_id, group.users).then(matches =>
+                matches.map(match => MATCH.notifyUsers(team_id, match.users))
               )
             );
             return Promise.all(matching);
@@ -93,21 +83,21 @@ router.post('/', (req, res) => {
         }
         switch (action) {
           case 'add':
-            addLocation(team_id, location);
+            DB.addLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: `✅ Added ${location} to the available locations.`
             });
             break;
           case 'remove':
-            removeLocation(team_id, location);
+            DB.removeLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: `✅ Removed ${location} from the available locations.`
             });
             break;
           case 'list':
-            getLocations(team_id, location)
+            DB.getLocations(team_id, location)
               .then(locations => {
                 const numberOfLocations = locations.length;
                 const locationNames = locations
@@ -137,10 +127,10 @@ router.post('/', (req, res) => {
         }
         switch (words[1]) {
           case 'restart':
-            restartBot(team_id);
+            SLACK.restartBot(team_id);
             break;
           case 'stop':
-            stopBot(team_id);
+            SLACK.stopBot(team_id);
             break;
           default:
             break;

@@ -1,5 +1,5 @@
 import request from 'request';
-import logger from './logger';
+import logger from '../util/logger';
 
 export function sendResponse(responseURL, JSONmessage) {
   const postOptions = {
