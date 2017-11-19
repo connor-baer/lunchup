@@ -2,7 +2,7 @@ import express from 'express';
 import logger from '../../util/logger';
 import { sendResponse } from '../../services/interactions';
 import * as SLACK from '../../services/slack';
-import * as MATCH from '../../services/match';
+import * as GROUPS from '../../services/groups';
 import * as LOCATIONS from '../../services/locations';
 import * as USERS from '../../services/users';
 import CONFIG from '../../../config';
@@ -56,12 +56,12 @@ router.post('/', (req, res) => {
         break;
       case 'match': {
         USERS.getUsers(team_id)
-          .then(users => MATCH.updateUsers(team_id, users))
-          .then(activeUsers => MATCH.groupUsers(team_id, activeUsers))
+          .then(users => GROUPS.updateUsers(team_id, users))
+          .then(activeUsers => GROUPS.groupUsers(team_id, activeUsers))
           .then(groupedUsers => {
             const matching = groupedUsers.map(group =>
-              MATCH.matchUsers(team_id, group.users).then(matches =>
-                matches.map(match => MATCH.notifyUsers(team_id, match.users))
+              GROUPS.matchUsers(team_id, group.users).then(matches =>
+                matches.map(match => GROUPS.notifyUsers(team_id, match.users))
               )
             );
             return Promise.all(matching);

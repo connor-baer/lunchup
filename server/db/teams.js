@@ -30,8 +30,8 @@ export function addTeam(team) {
   return teams.insert(team);
 }
 
-deleteTeam.operation = 'DELETE';
-// deleteTeam.invalidates = ['getTeams'];
-export function deleteTeam(_id) {
+removeTeam.operation = 'DELETE';
+// removeTeam.invalidates = ['getTeams'];
+export function removeTeam(_id) {
   return teams.remove({ _id });
 }

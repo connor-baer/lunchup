@@ -6,6 +6,59 @@ import * as LOCATIONS from './locations';
 import * as USERS from './users';
 import DB from '../db';
 
+export async function addGroup(teamId, group) {
+  if (!teamId) {
+    throw new Error('Team id not provided.');
+  }
+  if (!group) {
+    throw new Error('Group not provided.');
+  }
+  const _id = `${teamId}${group.id}`;
+  try {
+    return await DB.groups.addGroup({ ...group, _id });
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export async function updateGroup(teamId, group) {
+  if (!teamId) {
+    throw new Error('Team id not provided.');
+  }
+  if (!group) {
+    throw new Error('Group not provided.');
+  }
+  const _id = `${teamId}${group.id}`;
+  try {
+    return await DB.groups.updateGroup({ ...group, _id });
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export async function removeGroup(teamId, groupId) {
+  if (!teamId) {
+    throw new Error('Team id not provided.');
+  }
+  if (!groupId) {
+    throw new Error('Group name not provided.');
+  }
+  const _id = `${teamId}${groupId}`;
+  try {
+    return await DB.groups.removeGroup(_id);
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export async function getGroups(teamId) {
+  try {
+    return await DB.groups.getGroups(teamId);
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
 export function updateUsers(teamId, users) {
   if (!teamId || isEmpty(users)) {
     return null;
