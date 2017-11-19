@@ -2,8 +2,8 @@ import express from 'express';
 import logger from '../../util/logger';
 import * as MESSAGE from '../../constants/messages';
 import { sendResponse } from '../../services/interactions';
-import { addMongoDbId } from '../../util/addMongoDbId';
 import DB from '../../db';
+import * as LOCATIONS from '../../services/locations';
 import CONFIG from '../../../config';
 
 const router = express.Router();
@@ -32,7 +32,7 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join': {
       if (action.value === 'true') {
-        DB.locations.getLocations(team.id).then(locations => {
+        LOCATIONS.getLocations(team.id).then(locations => {
           const locationOptions = locations.map(location => ({
             text: decodeURI(location.city),
             value: location.city

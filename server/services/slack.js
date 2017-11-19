@@ -1,4 +1,4 @@
-import { find } from 'lodash';
+import { find, get } from 'lodash';
 import {
   RtmClient,
   WebClient,
@@ -9,7 +9,7 @@ import { contains } from '../util/contains';
 import logger from '../util/logger';
 import * as MESSAGE from '../constants/messages';
 import * as TEAMS from '../services/teams';
-import DB from '../db';
+import * as LOCATIONS from '../services/locations';
 
 const apis = [];
 const bots = [];
@@ -160,7 +160,7 @@ export function startBot(teamId, botToken) {
         break;
       }
       case contains(text, ['location', 'city', 'office', 'place']): {
-        DB.locations.getLocations(teamId).then(locations => {
+        LOCATIONS.getLocations(teamId).then(locations => {
           const locationOptions = locations.map(location => ({
             text: decodeURI(location.city),
             value: location.city
@@ -230,7 +230,7 @@ export function startBot(teamId, botToken) {
 export function initSlack(teamId) {
   return TEAMS.getTeam(teamId)
     .then(team => {
-      const SLACK_BOT_TOKEN = team.sys.bot.bot_access_token;
+      const SLACK_BOT_TOKEN = get(team, 'sys.bot.bot_access_token');
 
       startApi(teamId, SLACK_BOT_TOKEN);
       startBot(teamId, SLACK_BOT_TOKEN);

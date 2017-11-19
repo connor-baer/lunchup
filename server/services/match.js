@@ -2,6 +2,7 @@ import { crypto } from 'crypto';
 import { isEmpty } from 'lodash';
 import logger from '../util/logger';
 import * as SLACK from './slack';
+import * as LOCATIONS from './locations';
 import DB from '../db';
 
 export function updateUsers(teamId, users) {
@@ -28,7 +29,7 @@ export function updateUsers(teamId, users) {
 }
 
 export function groupUsers(teamId, users) {
-  return DB.locations.getLocations(teamId).then(locations =>
+  return LOCATIONS.getLocations(teamId).then(locations =>
     locations.map(location => ({
       location,
       users: users.filter(user => user.location === location)

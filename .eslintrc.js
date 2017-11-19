@@ -4,7 +4,6 @@ module.exports = {
   rules: {
     'no-use-before-define': ['error', { functions: false }],
     'no-underscore-dangle': 'off',
-    'no-param-reassign': 'off',
     'max-len': [
       'error',
       {
@@ -39,7 +38,7 @@ module.exports = {
     }
   },
   env: {
-    browser: true,
+    node: true,
     jest: true
   },
   settings: {

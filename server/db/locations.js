@@ -13,8 +13,7 @@ export function getLocations(teamId) {
 
 getLocation.operation = 'READ';
 getLocation.byId = true;
-export function getLocation(teamId, locationId) {
-  const _id = `${teamId}${locationId}`;
+export function getLocation(_id) {
   return locations.find({ _id });
 }
 
@@ -34,9 +33,8 @@ export function addLocation(location) {
   return locations.insert(locationWithId);
 }
 
-deleteLocation.operation = 'DELETE';
-// deleteLocation.invalidates = ['getLocations'];
-export function deleteLocation(teamId, locationId) {
-  const _id = `${teamId}${locationId}`;
+removeLocation.operation = 'DELETE';
+// removeLocation.invalidates = ['getLocations'];
+export function removeLocation(_id) {
   return locations.remove({ _id });
 }

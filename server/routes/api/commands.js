@@ -4,6 +4,7 @@ import { sendResponse } from '../../services/interactions';
 import DB from '../../db';
 import * as SLACK from '../../services/slack';
 import * as MATCH from '../../services/match';
+import * as LOCATIONS from '../../services/locations';
 import CONFIG from '../../../config';
 
 const router = express.Router();
@@ -83,22 +84,21 @@ router.post('/', (req, res) => {
         }
         switch (action) {
           case 'add':
-            DB.locations.addLocation(team_id, location);
+            LOCATIONS.addLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: `✅ Added ${location} to the available locations.`
             });
             break;
           case 'remove':
-            DB.locations.removeLocation(team_id, location);
+            LOCATIONS.removeLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: `✅ Removed ${location} from the available locations.`
             });
             break;
           case 'list':
-            DB.locations
-              .getLocations(team_id, location)
+            LOCATIONS.getLocations(team_id, location)
               .then(locations => {
                 const numberOfLocations = locations.length;
                 const locationNames = locations

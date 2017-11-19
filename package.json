@@ -24,7 +24,7 @@
     "precommit": "lint-staged",
     "test": "npm run test:lint --silent && npm run test:unit --silent",
     "test:lint": "eslint --cache --quiet server/**/*.js",
-    "test:lint:watch": "onchange \"**/*.js\" -- npm run test:lint-js",
+    "test:lint:watch": "onchange \"**/**/*.js\" -- npm run test:lint",
     "test:unit": "jest",
     "test:unit:watch": "jest --watch"
   },
@@ -83,6 +83,7 @@
     "husky": "^0.13.4",
     "jest": "^21.2.1",
     "lint-staged": "^3.6.0",
+    "onchange": "^3.2.1",
     "prettier": "^1.8.2"
   }
 }
