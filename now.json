@@ -1,0 +1,14 @@
+{
+  "alias": "lunchup.xyz",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "files": [
+    ".babelrc",
+    "config.js",
+    "public",
+    "server",
+    "views",
+    "webpack.config.js"
+  ]
+}

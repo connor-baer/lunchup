@@ -1,7 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+
 import logger from './util/logger';
+import CONFIG from '../config';
 
 import * as TEAMS from './services/teams';
 import * as SLACK from './services/slack';
@@ -12,7 +14,7 @@ import { events } from './routes/api/events';
 import { commands } from './routes/api/commands';
 import { actions } from './routes/api/actions';
 
-const port = process.env.PORT || 8080;
+const port = CONFIG.port || 8080;
 const app = express();
 
 TEAMS.getTeams().then(teams =>

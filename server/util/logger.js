@@ -12,7 +12,11 @@ const defaultOptions = {
   timestamp: createTimestamp,
   formatter: formatLogEntry
 };
-const transports = [new File(defaultOptions), new Console(defaultOptions)];
+
+const isDev = CONFIG.environment !== 'production';
+const transports = isDev
+  ? [new File(defaultOptions), new Console(defaultOptions)]
+  : [new Console(defaultOptions)];
 
 /**
  * @description Parses a meta object into a formatted json string.

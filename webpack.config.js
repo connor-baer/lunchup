@@ -16,7 +16,7 @@ const plugins = isDev
       new webpack.DefinePlugin({
         'process.env': {
           BUILD_TARGET: JSON.stringify('app'),
-          PORT: JSON.stringify(process.env.PORT)
+          NODE_ENV: JSON.stringify(process.env.NODE_ENV)
         }
       })
     ]
@@ -25,7 +25,8 @@ const plugins = isDev
       new webpack.optimize.ModuleConcatenationPlugin(),
       new webpack.DefinePlugin({
         'process.env': {
-          BUILD_TARGET: JSON.stringify('production')
+          BUILD_TARGET: JSON.stringify('production'),
+          NODE_ENV: JSON.stringify(process.env.NODE_ENV)
         }
       })
     ];
