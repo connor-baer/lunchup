@@ -1,9 +1,7 @@
 import express from 'express';
 import logger from '../../util/logger';
 import { sendResponse } from '../../services/interactions';
-import { config } from '../../../config.json';
-
-const { SLACK_VERIFICATION_TOKEN } = config;
+import CONFIG from '../../../config';
 
 const router = express.Router();
 
@@ -14,7 +12,7 @@ router.post('/', (req, res) => {
 
     logger.info(`Challenge: ${challenge}`);
 
-    if (token === SLACK_VERIFICATION_TOKEN) {
+    if (token === CONFIG.slack.verificationToken) {
       res.json({ challenge });
       return;
     }

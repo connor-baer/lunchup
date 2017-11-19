@@ -8,7 +8,7 @@ import {
 import { contains } from '../util/contains';
 import logger from '../util/logger';
 import * as MESSAGE from '../constants/messages';
-import * as DB from './db';
+import DB from '../db';
 
 const apis = [];
 const bots = [];
@@ -60,7 +60,9 @@ export function startBot(teamId, botToken) {
 
     api.chat.postMessage(
       channel,
-      `Hello! <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`, // eslint-disable-line max-len
+      `Hello! <@${
+        rtm.activeUserId
+      }> (that's me) matches up two random coworkers every week to go on a blind lunch.`, // eslint-disable-line max-len
       MESSAGE.join(),
       err => {
         if (err) {
@@ -101,7 +103,9 @@ export function startBot(teamId, botToken) {
       ]): {
         api.chat.postMessage(
           channel,
-          `Hi <@${user}>! 👋 <@${rtm.activeUserId}> (that's me) matches up two random coworkers every week to go on a blind lunch.`, // eslint-disable-line max-len
+          `Hi <@${user}>! 👋 <@${
+            rtm.activeUserId
+          }> (that's me) matches up two random coworkers every week to go on a blind lunch.`, // eslint-disable-line max-len
           {
             thread_ts,
             response_type: 'ephermal',
@@ -137,7 +141,9 @@ export function startBot(teamId, botToken) {
       case contains(text, ['leave', 'sign out', 'opt out', 'stop', 'bye']): {
         api.chat.postMessage(
           channel,
-          `Are you sure you want to leave? You can also take a break. Just ask me (<@${rtm.activeUserId}>).`, // eslint-disable-line max-len
+          `Are you sure you want to leave? You can also take a break. Just ask me (<@${
+            rtm.activeUserId
+          }>).`, // eslint-disable-line max-len
           {
             thread_ts,
             response_type: 'ephermal',
@@ -153,7 +159,7 @@ export function startBot(teamId, botToken) {
         break;
       }
       case contains(text, ['location', 'city', 'office', 'place']): {
-        DB.getLocations(teamId).then(locations => {
+        DB.locations.getLocations(teamId).then(locations => {
           const locationOptions = locations.map(location => ({
             text: decodeURI(location.city),
             value: location.city
@@ -184,7 +190,9 @@ export function startBot(teamId, botToken) {
         'question'
       ]): {
         rtm.send({
-          text: `Hi, my name is <@${rtm.activeUserId}>! 👋 I match up two random coworkers every week to go on a blind lunch. You can *join*, *take a break*, *leave*, or *update your location*. Just send me a message that includes one of these keywords or a similar one.`, // eslint-disable-line max-len
+          text: `Hi, my name is <@${
+            rtm.activeUserId
+          }>! 👋 I match up two random coworkers every week to go on a blind lunch. You can *join*, *take a break*, *leave*, or *update your location*. Just send me a message that includes one of these keywords or a similar one.`, // eslint-disable-line max-len
           channel,
           thread_ts,
           type: RTM_EVENTS.MESSAGE
@@ -202,7 +210,9 @@ export function startBot(teamId, botToken) {
       }
       default: {
         rtm.send({
-          text: `I'm sorry <@${user}>, I couldn't understand your message. Sometimes I have an easier time with a few simple keywords.`, // eslint-disable-line max-len
+          text: `I'm sorry <@${
+            user
+          }>, I couldn't understand your message. Sometimes I have an easier time with a few simple keywords.`, // eslint-disable-line max-len
           channel,
           thread_ts,
           type: RTM_EVENTS.MESSAGE
@@ -217,7 +227,8 @@ export function startBot(teamId, botToken) {
 }
 
 export function initSlack(teamId) {
-  return DB.getTeam(teamId)
+  return DB.teams
+    .getTeam(teamId)
     .then(team => {
       const SLACK_BOT_TOKEN = team.sys.bot.bot_access_token;
 

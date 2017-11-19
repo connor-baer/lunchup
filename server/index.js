@@ -3,8 +3,8 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import logger from './util/logger';
 
-import { getTeams } from './services/db';
-import { initSlack } from './services/slack';
+import DB from './db';
+import * as SLACK from './services/slack';
 
 import { index } from './routes/index';
 import { auth } from './routes/api/auth';
@@ -15,9 +15,9 @@ import { actions } from './routes/api/actions';
 const port = process.env.PORT || 8080;
 const app = express();
 
-getTeams().then(teams =>
+DB.teams.getTeams().then(teams =>
   teams.forEach(team => {
-    initSlack(team.id);
+    SLACK.initSlack(team.id);
   })
 );
 

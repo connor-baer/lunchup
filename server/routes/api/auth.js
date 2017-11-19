@@ -2,11 +2,9 @@ import express from 'express';
 import request from 'request';
 import async from 'async';
 import logger from '../../util/logger';
-import * as DB from '../../services/db';
+import DB from '../../db';
 import * as SLACK from '../../services/slack';
-import { config } from '../../../config.json';
-
-const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT } = config;
+import CONFIG from '../../../config';
 
 const router = express.Router();
 
@@ -29,10 +27,10 @@ router.get('/', (req, res) => {
       auth: callback => {
         // Post code, app ID, and app secret, to get token.
         let authAddress = 'https://slack.com/api/oauth.access?';
-        authAddress += `client_id=${SLACK_CLIENT_ID}`;
-        authAddress += `&client_secret=${SLACK_CLIENT_SECRET}`;
+        authAddress += `client_id=${CONFIG.slack.clientId}`;
+        authAddress += `&client_secret=${CONFIG.slack.clientSecret}`;
         authAddress += `&code=${code}`;
-        authAddress += `&redirect_uri=${SLACK_REDIRECT}`;
+        authAddress += `&redirect_uri=${CONFIG.slack.redirectUrl}`;
 
         request.get(authAddress, (err, response, body) => {
           if (err) {
@@ -99,7 +97,8 @@ router.get('/', (req, res) => {
             access_token: auth.access_token
           };
 
-          DB.addTeam(team.id, team)
+          DB.teams
+            .addTeam(team.id, team)
             .then(() => {
               SLACK.initSlack(team.id);
               return callback(null, team);

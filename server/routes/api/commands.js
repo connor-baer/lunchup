@@ -1,12 +1,10 @@
 import express from 'express';
 import logger from '../../util/logger';
 import { sendResponse } from '../../services/interactions';
-import * as DB from '../../services/db';
+import DB from '../../db';
 import * as SLACK from '../../services/slack';
 import * as MATCH from '../../services/match';
-import { config } from '../../../config.json';
-
-const { SLACK_VERIFICATION_TOKEN } = config;
+import CONFIG from '../../../config';
 
 const router = express.Router();
 
@@ -14,7 +12,7 @@ const router = express.Router();
 router.post('/', (req, res) => {
   const { response_url, command, text, token, team_id } = req.body;
 
-  if (token !== SLACK_VERIFICATION_TOKEN) {
+  if (token !== CONFIG.slack.verificationToken) {
     res.status(401).end('Unauthorized');
     return;
   }
@@ -38,7 +36,8 @@ router.post('/', (req, res) => {
   if (command === '/lunchup') {
     switch (words[0]) {
       case 'users':
-        DB.getUsers(team_id)
+        DB.users
+          .getUsers(team_id)
           .then(users => {
             const numberOfUsers = users.length;
             const userNames = users.map(user => user.name).join(', ');
@@ -56,7 +55,8 @@ router.post('/', (req, res) => {
           });
         break;
       case 'match': {
-        DB.getUsers(team_id)
+        DB.users
+          .getUsers(team_id)
           .then(users => MATCH.updateUsers(team_id, users))
           .then(activeUsers => MATCH.groupUsers(team_id, activeUsers))
           .then(groupedUsers => {
@@ -83,21 +83,22 @@ router.post('/', (req, res) => {
         }
         switch (action) {
           case 'add':
-            DB.addLocation(team_id, location);
+            DB.locations.addLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: `✅ Added ${location} to the available locations.`
             });
             break;
           case 'remove':
-            DB.removeLocation(team_id, location);
+            DB.locations.removeLocation(team_id, location);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: `✅ Removed ${location} from the available locations.`
             });
             break;
           case 'list':
-            DB.getLocations(team_id, location)
+            DB.locations
+              .getLocations(team_id, location)
               .then(locations => {
                 const numberOfLocations = locations.length;
                 const locationNames = locations
@@ -105,7 +106,9 @@ router.post('/', (req, res) => {
                   .join(', ');
                 sendResponse(response_url, {
                   response_type: 'ephermal',
-                  text: `ℹ️ There are ${numberOfLocations} locations: ${locationNames}.` // eslint-disable-line max-len
+                  text: `ℹ️ There are ${numberOfLocations} locations: ${
+                    locationNames
+                  }.` // eslint-disable-line max-len
                 });
               })
               .catch(err => {

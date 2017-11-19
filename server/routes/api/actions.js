@@ -2,10 +2,9 @@ import express from 'express';
 import logger from '../../util/logger';
 import * as MESSAGE from '../../constants/messages';
 import { sendResponse } from '../../services/interactions';
-import * as DB from '../../services/db';
-import { config } from '../../../config.json';
-
-const { SLACK_VERIFICATION_TOKEN } = config;
+import { addMongoDbId } from '../../util/addMongoDbId';
+import DB from '../../db';
+import CONFIG from '../../../config';
 
 const router = express.Router();
 
@@ -14,7 +13,7 @@ router.post('/', (req, res) => {
   const content = JSON.parse(req.body.payload);
   const { token, team, user, actions, response_url } = content;
 
-  if (token !== SLACK_VERIFICATION_TOKEN) {
+  if (token !== CONFIG.slack.verificationToken) {
     res.status(401).end('Unauthorized');
     return;
   }
@@ -33,7 +32,7 @@ router.post('/', (req, res) => {
   switch (action.name) {
     case 'join': {
       if (action.value === 'true') {
-        DB.getLocations(team.id).then(locations => {
+        DB.locations.getLocations(team.id).then(locations => {
           const locationOptions = locations.map(location => ({
             text: decodeURI(location.city),
             value: location.city
@@ -48,7 +47,7 @@ router.post('/', (req, res) => {
         });
         break;
       }
-      DB.removeUser(team.id, user.id);
+      DB.users.removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text:
@@ -71,10 +70,12 @@ router.post('/', (req, res) => {
         +new Date() + 1000 * 60 * 60 * 24 * 7 * Number(action.value)
       );
       const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
-      DB.updateUser(team.id, user.id, { active: false, timestamp });
+      DB.users.updateUser(team.id, user.id, { active: false, timestamp });
       sendResponse(response_url, {
         response_type: 'ephermal',
-        text: `🗓 Alright! I'll include you again in ${action.value} ${singOrPlur}.`, // eslint-disable-line max-len
+        text: `🗓 Alright! I'll include you again in ${action.value} ${
+          singOrPlur
+        }.`, // eslint-disable-line max-len
         replace_original: true
       });
       break;
@@ -88,7 +89,7 @@ router.post('/', (req, res) => {
         });
         break;
       }
-      DB.removeUser(team.id, user.id);
+      DB.users.removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: "😢 Noooooo! Fine, I've removed you from the list.",
@@ -99,7 +100,7 @@ router.post('/', (req, res) => {
     case 'location': {
       const location = action.selected_options[0].value;
       const userWithLocation = Object.assign(user, { location });
-      DB.addUser(team.id, userWithLocation);
+      DB.users.addUser(team.id, userWithLocation);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗺 ${location}, nice! I've updated your location.`,
