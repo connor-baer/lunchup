@@ -6,7 +6,8 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', (req, res) => {
-  res.render('index', merge(CONFIG, { title: 'Lunchup' }));
+  const { slack } = CONFIG;
+  res.render('index', merge(slack, { title: 'Lunchup' }));
 });
 
 export { router as index };

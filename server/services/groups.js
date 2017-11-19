@@ -6,16 +6,9 @@ import * as LOCATIONS from './locations';
 import * as USERS from './users';
 import DB from '../db';
 
-export async function addGroup(teamId, group) {
-  if (!teamId) {
-    throw new Error('Team id not provided.');
-  }
-  if (!group) {
-    throw new Error('Group not provided.');
-  }
-  const _id = `${teamId}${group.id}`;
+export async function getGroups(teamId) {
   try {
-    return await DB.groups.addGroup({ ...group, _id });
+    return await DB.groups.getGroups(teamId);
   } catch (e) {
     throw new Error(e);
   }
@@ -36,6 +29,10 @@ export async function updateGroup(teamId, group) {
   }
 }
 
+export function addUserGroup(teamId, group) {
+  return updateGroup(teamId, group);
+}
+
 export async function removeGroup(teamId, groupId) {
   if (!teamId) {
     throw new Error('Team id not provided.');
@@ -46,14 +43,6 @@ export async function removeGroup(teamId, groupId) {
   const _id = `${teamId}${groupId}`;
   try {
     return await DB.groups.removeGroup(_id);
-  } catch (e) {
-    throw new Error(e);
-  }
-}
-
-export async function getGroups(teamId) {
-  try {
-    return await DB.groups.getGroups(teamId);
   } catch (e) {
     throw new Error(e);
   }
@@ -131,7 +120,7 @@ export function notifyUsers(teamId, userIds) {
   const api = SLACK.apiForTeam(teamId);
   api.mpim.open(users, (err, res) => {
     if (err) {
-      logger.error(err);
+      logger.error('Failed to notify users', err);
       return;
     }
     const channel = res.group.id;

@@ -1,37 +1,37 @@
 import monk from 'monk';
 import CONFIG from '../../config';
+import logger from '../util/logger';
 
 const db = monk(CONFIG.mongodb.url);
-const teams = db.get('teams');
+const teams = db.get('teams', { castIds: false });
 
-getTeams.operation = 'READ';
+getTeams.operation = 'NO_OPERATION';
 export function getTeams() {
+  logger.debug('getTeams');
   return teams.find();
 }
 
 getTeam.operation = 'READ';
 getTeam.byId = true;
 export function getTeam(_id) {
+  logger.debug('getTeam', _id);
   return teams.find({ _id });
 }
 
 updateTeam.operation = 'UPDATE';
-// updateTeam.invalidates = ['getTeams'];
+updateTeam.invalidates = ['getTeams', 'getTeam'];
 export function updateTeam(team) {
+  logger.debug('updateTeam', team);
   const { _id } = team;
   return teams.update({ _id }, team, {
     upsert: true
   });
 }
 
-addTeam.operation = 'CREATE';
-// addTeam.invalidates = ['getTeams'];
-export function addTeam(team) {
-  return teams.insert(team);
-}
-
 removeTeam.operation = 'DELETE';
-// removeTeam.invalidates = ['getTeams'];
+removeTeam.byId = true;
+removeTeam.invalidates = ['getTeams', 'getTeam'];
 export function removeTeam(_id) {
+  logger.debug('removeTeam', _id);
   return teams.remove({ _id });
 }

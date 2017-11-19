@@ -13,7 +13,7 @@ export async function addUser(teamId, user) {
     snooze: false
   };
   try {
-    return await DB.users.addUser(fullUser);
+    return await DB.users.updateUser(fullUser);
   } catch (e) {
     throw new Error(e);
   }

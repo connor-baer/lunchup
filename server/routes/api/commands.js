@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
             });
           })
           .catch(err => {
-            logger.error(err);
+            logger.error('Failed to respond to users command', err);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: err
@@ -67,7 +67,7 @@ router.post('/', (req, res) => {
             return Promise.all(matching);
           })
           .catch(err => {
-            logger.error(err);
+            logger.error('Failed to respond to match command', err);
             sendResponse(response_url, {
               response_type: 'ephermal',
               text: err
@@ -110,7 +110,7 @@ router.post('/', (req, res) => {
                 });
               })
               .catch(err => {
-                logger.error(err);
+                logger.error('Failed to respond to locations command', err);
                 sendResponse(response_url, {
                   response_type: 'ephermal',
                   text: err

@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
   const { code, error } = req.query;
 
   if (!code) {
-    logger.error('No code provided.');
+    logger.error('No code provided.', error);
 
     res.render('api/auth', {
       title: '🚨 Failure',
@@ -48,7 +48,7 @@ router.get('/', (req, res) => {
           }
 
           if (!auth.ok) {
-            logger.error(auth.error);
+            logger.error('Error in auth.', auth.error);
             return callback(new Error(auth.error));
           }
 
@@ -74,7 +74,7 @@ router.get('/', (req, res) => {
 
               return callback(null, identity);
             } catch (e) {
-              logger.error(e);
+              logger.error('Failed to parse body', e);
               return callback(e);
             }
           });
@@ -103,7 +103,7 @@ router.get('/', (req, res) => {
               return callback(null, team);
             })
             .catch(err => {
-              logger.error(err);
+              logger.error('Failed to initialise Slack', err);
               return callback(err);
             });
         }
@@ -111,9 +111,10 @@ router.get('/', (req, res) => {
     },
     err => {
       if (err) {
+        logger.error('Failed to authenticate with Slack', err);
         res.render('api/auth', {
           title: '🚨 Failure',
-          message: err && err.message
+          message: err || 'Something went wrong. Please try again.'
         });
         return;
       }

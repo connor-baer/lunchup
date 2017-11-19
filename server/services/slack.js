@@ -67,7 +67,7 @@ export function startBot(teamId, botToken) {
       MESSAGE.join(),
       err => {
         if (err) {
-          logger.error(err);
+          logger.error('Failed to send join message', err);
         }
       }
     );
@@ -115,7 +115,7 @@ export function startBot(teamId, botToken) {
           },
           err => {
             if (err) {
-              logger.error(err);
+              logger.error('Failed to send join message', err);
             }
           }
         );
@@ -133,7 +133,7 @@ export function startBot(teamId, botToken) {
           },
           err => {
             if (err) {
-              logger.error(err);
+              logger.error('Failed to send snooze message', err);
             }
           }
         );
@@ -153,7 +153,7 @@ export function startBot(teamId, botToken) {
           },
           err => {
             if (err) {
-              logger.error(err);
+              logger.error('Failed to send leave message', err);
             }
           }
         );
@@ -176,7 +176,7 @@ export function startBot(teamId, botToken) {
             },
             err => {
               if (err) {
-                logger.error(err);
+                logger.error('Failed to send location message', err);
               }
             }
           );
@@ -227,15 +227,16 @@ export function startBot(teamId, botToken) {
   bots.push(rtm);
 }
 
-export function initSlack(teamId) {
-  return TEAMS.getTeam(teamId)
-    .then(team => {
-      const SLACK_BOT_TOKEN = get(team, 'sys.bot.bot_access_token');
+export async function initSlack(teamId) {
+  try {
+    const team = await TEAMS.getTeam(teamId);
+    const botAccessToken = get(team, 'bot.bot_access_token');
 
-      startApi(teamId, SLACK_BOT_TOKEN);
-      startBot(teamId, SLACK_BOT_TOKEN);
-    })
-    .catch(err => logger.error(err));
+    startApi(teamId, botAccessToken);
+    startBot(teamId, botAccessToken);
+  } catch (e) {
+    logger.error('Failed to initialize a Slack team', e);
+  }
 }
 
 export function stopBot(teamId) {

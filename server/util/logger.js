@@ -1,9 +1,8 @@
 import winston from 'winston';
 import moment from 'moment';
 
-const Logger = winston.Logger;
-const File = winston.transports.File;
-const Console = winston.transports.Console;
+const { Logger } = winston;
+const { File, Console } = winston.transports;
 
 const defaultOptions = {
   filename: 'node.log',
