@@ -2,8 +2,8 @@ import express from 'express';
 import logger from '../../util/logger';
 import * as MESSAGE from '../../constants/messages';
 import { sendResponse } from '../../services/interactions';
-import DB from '../../db';
 import * as LOCATIONS from '../../services/locations';
+import * as USERS from '../../services/users';
 import CONFIG from '../../../config';
 
 const router = express.Router();
@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
         });
         break;
       }
-      DB.users.removeUser(team.id, user.id);
+      USERS.removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text:
@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
     }
     case 'snooze': {
       if (action.value === 'false') {
-        DB.updateUser(team.id, user.id, { active: true, timestamp: false });
+        USERS.updateUser(team.id, user.id, { active: true, timestamp: false });
         sendResponse(response_url, {
           response_type: 'ephermal',
           text: "👍 Cool! I'll include you again.",
@@ -70,7 +70,7 @@ router.post('/', (req, res) => {
         +new Date() + 1000 * 60 * 60 * 24 * 7 * Number(action.value)
       );
       const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
-      DB.users.updateUser(team.id, user.id, { active: false, timestamp });
+      USERS.updateUser(team.id, user.id, { active: false, timestamp });
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗓 Alright! I'll include you again in ${action.value} ${
@@ -89,7 +89,7 @@ router.post('/', (req, res) => {
         });
         break;
       }
-      DB.users.removeUser(team.id, user.id);
+      USERS.removeUser(team.id, user.id);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: "😢 Noooooo! Fine, I've removed you from the list.",
@@ -100,7 +100,7 @@ router.post('/', (req, res) => {
     case 'location': {
       const location = action.selected_options[0].value;
       const userWithLocation = Object.assign(user, { location });
-      DB.users.addUser(team.id, userWithLocation);
+      USERS.addUser(team.id, userWithLocation);
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗺 ${location}, nice! I've updated your location.`,

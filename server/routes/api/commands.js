@@ -1,10 +1,10 @@
 import express from 'express';
 import logger from '../../util/logger';
 import { sendResponse } from '../../services/interactions';
-import DB from '../../db';
 import * as SLACK from '../../services/slack';
 import * as MATCH from '../../services/match';
 import * as LOCATIONS from '../../services/locations';
+import * as USERS from '../../services/users';
 import CONFIG from '../../../config';
 
 const router = express.Router();
@@ -37,8 +37,7 @@ router.post('/', (req, res) => {
   if (command === '/lunchup') {
     switch (words[0]) {
       case 'users':
-        DB.users
-          .getUsers(team_id)
+        USERS.getUsers(team_id)
           .then(users => {
             const numberOfUsers = users.length;
             const userNames = users.map(user => user.name).join(', ');
@@ -56,8 +55,7 @@ router.post('/', (req, res) => {
           });
         break;
       case 'match': {
-        DB.users
-          .getUsers(team_id)
+        USERS.getUsers(team_id)
           .then(users => MATCH.updateUsers(team_id, users))
           .then(activeUsers => MATCH.groupUsers(team_id, activeUsers))
           .then(groupedUsers => {

@@ -2,7 +2,7 @@ import DB from '../db';
 
 export async function addLocation(teamId, locationName) {
   if (!teamId) {
-    throw new Error('team id not provided.');
+    throw new Error('Team id not provided.');
   }
   if (!locationName) {
     throw new Error('Location name not provided.');
@@ -22,7 +22,7 @@ export async function addLocation(teamId, locationName) {
 
 export async function removeLocation(teamId, locationName) {
   if (!teamId) {
-    throw new Error('team id not provided.');
+    throw new Error('Team id not provided.');
   }
   if (!locationName) {
     throw new Error('Location name not provided.');

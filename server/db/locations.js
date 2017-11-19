@@ -1,14 +1,12 @@
 import monk from 'monk';
-import { addMongoDbId } from '../util/addMongoDbId';
 import CONFIG from '../../config';
 
 const db = monk(CONFIG.mongodb.url);
-
 const locations = db.get('locations');
 
 getLocations.operation = 'READ';
 export function getLocations(teamId) {
-  return locations.find({ teamId });
+  return locations.find({ team_id: teamId });
 }
 
 getLocation.operation = 'READ';
@@ -20,8 +18,8 @@ export function getLocation(_id) {
 updateLocation.operation = 'UPDATE';
 // updateLocation.invalidates = ['getLocations'];
 export function updateLocation(location) {
-  const locationWithId = addMongoDbId(location, ['team_id', 'id']);
-  return locations.update({ _id: locationWithId._id }, locationWithId, {
+  const { _id } = location;
+  return locations.update({ _id }, location, {
     upsert: true
   });
 }
@@ -29,8 +27,7 @@ export function updateLocation(location) {
 addLocation.operation = 'CREATE';
 // addLocation.invalidates = ['getLocations'];
 export function addLocation(location) {
-  const locationWithId = addMongoDbId(location, ['team_id', 'id']);
-  return locations.insert(locationWithId);
+  return locations.insert(location);
 }
 
 removeLocation.operation = 'DELETE';

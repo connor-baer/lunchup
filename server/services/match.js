@@ -3,6 +3,7 @@ import { isEmpty } from 'lodash';
 import logger from '../util/logger';
 import * as SLACK from './slack';
 import * as LOCATIONS from './locations';
+import * as USERS from './users';
 import DB from '../db';
 
 export function updateUsers(teamId, users) {
@@ -16,7 +17,7 @@ export function updateUsers(teamId, users) {
       user.timestamp !== false &&
       new Date(user.timestamp).getTime() < today.getTime()
     ) {
-      DB.users.updateUser(teamId, user.id, {
+      USERS.updateUser(teamId, user.id, {
         active: true,
         timestamp: false
       });

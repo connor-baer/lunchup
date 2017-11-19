@@ -1,9 +1,7 @@
 import monk from 'monk';
-import { addMongoDbId } from '../util/addMongoDbId';
 import CONFIG from '../../config';
 
 const db = monk(CONFIG.mongodb.url);
-
 const teams = db.get('teams');
 
 getTeams.operation = 'READ';
@@ -20,8 +18,8 @@ export function getTeam(_id) {
 updateTeam.operation = 'UPDATE';
 // updateTeam.invalidates = ['getTeams'];
 export function updateTeam(team) {
-  const teamWithId = addMongoDbId(team);
-  return teams.update({ _id: teamWithId._id }, teamWithId, {
+  const { _id } = team;
+  return teams.update({ _id }, team, {
     upsert: true
   });
 }
