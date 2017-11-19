@@ -2,7 +2,7 @@ import express from 'express';
 import request from 'request';
 import async from 'async';
 import logger from '../../util/logger';
-import DB from '../../db';
+import * as TEAMS from '../../services/teams';
 import * as SLACK from '../../services/slack';
 import CONFIG from '../../../config';
 
@@ -97,8 +97,7 @@ router.get('/', (req, res) => {
             access_token: auth.access_token
           };
 
-          DB.teams
-            .addTeam(team.id, team)
+          TEAMS.addTeam(team.id, team)
             .then(() => {
               SLACK.initSlack(team.id);
               return callback(null, team);

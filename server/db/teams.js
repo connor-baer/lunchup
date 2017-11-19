@@ -29,8 +29,7 @@ export function updateTeam(team) {
 addTeam.operation = 'CREATE';
 // addTeam.invalidates = ['getTeams'];
 export function addTeam(team) {
-  const teamWithId = addMongoDbId(team);
-  return teams.insert(teamWithId);
+  return teams.insert(team);
 }
 
 deleteTeam.operation = 'DELETE';

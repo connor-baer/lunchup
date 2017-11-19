@@ -8,6 +8,7 @@ import {
 import { contains } from '../util/contains';
 import logger from '../util/logger';
 import * as MESSAGE from '../constants/messages';
+import * as TEAMS from '../services/teams';
 import DB from '../db';
 
 const apis = [];
@@ -227,8 +228,7 @@ export function startBot(teamId, botToken) {
 }
 
 export function initSlack(teamId) {
-  return DB.teams
-    .getTeam(teamId)
+  return TEAMS.getTeam(teamId)
     .then(team => {
       const SLACK_BOT_TOKEN = team.sys.bot.bot_access_token;
 
