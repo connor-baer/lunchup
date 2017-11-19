@@ -15,7 +15,7 @@ getTeam.operation = 'READ';
 getTeam.byId = true;
 export function getTeam(_id) {
   logger.debug('getTeam', _id);
-  return teams.find({ _id });
+  return teams.findOne({ _id });
 }
 
 updateTeam.operation = 'UPDATE';

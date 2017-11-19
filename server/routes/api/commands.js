@@ -100,7 +100,7 @@ router.post('/', (req, res) => {
               .then(locations => {
                 const numberOfLocations = locations.length;
                 const locationNames = locations
-                  .map(item => item.city)
+                  .map(item => item.name)
                   .join(', ');
                 sendResponse(response_url, {
                   response_type: 'ephermal',

@@ -1,16 +1,16 @@
 import winston from 'winston';
 import moment from 'moment';
+import CONFIG from '../../config';
 
 const { Logger } = winston;
 const { File, Console } = winston.transports;
 
 const defaultOptions = {
   filename: 'node.log',
-  level: 'debug',
+  level: CONFIG.logLevel,
   prettyPrint: true,
   timestamp: createTimestamp,
-  formatter: formatLogEntry,
-  json: false
+  formatter: formatLogEntry
 };
 const transports = [new File(defaultOptions), new Console(defaultOptions)];
 

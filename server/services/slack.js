@@ -162,8 +162,8 @@ export function startBot(teamId, botToken) {
       case contains(text, ['location', 'city', 'office', 'place']): {
         LOCATIONS.getLocations(teamId).then(locations => {
           const locationOptions = locations.map(location => ({
-            text: decodeURI(location.city),
-            value: location.city
+            text: decodeURI(location.name),
+            value: location.id
           }));
           api.chat.postMessage(
             channel,

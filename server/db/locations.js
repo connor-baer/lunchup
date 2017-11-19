@@ -15,7 +15,7 @@ getLocation.operation = 'READ';
 getLocation.byId = true;
 export function getLocation(_id) {
   logger.debug('getLocation', _id);
-  return locations.find({ _id });
+  return locations.findOne({ _id });
 }
 
 updateLocation.operation = 'UPDATE';

@@ -7,13 +7,14 @@ export async function addUser(teamId, user) {
   if (!user) {
     throw new Error('User not provided.');
   }
-  const fullUser = {
+  const newUser = {
     _id: `${teamId}${user.id}`,
     active: true,
-    snooze: false
+    snooze: false,
+    ...user
   };
   try {
-    return await DB.users.updateUser(fullUser);
+    return await DB.users.updateUser(newUser);
   } catch (e) {
     throw new Error(e);
   }
@@ -27,8 +28,10 @@ export async function updateUser(teamId, user) {
     throw new Error('User not provided.');
   }
   const _id = `${teamId}${user.id}`;
+  const oldUser = await DB.users.getUser(_id);
+  const newUser = { ...oldUser, ...user };
   try {
-    return await DB.users.updateUser({ ...user, _id });
+    return await DB.users.updateUser(newUser);
   } catch (e) {
     throw new Error(e);
   }

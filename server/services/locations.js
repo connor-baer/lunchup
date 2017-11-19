@@ -18,7 +18,8 @@ export async function addLocation(teamId, locationName) {
   const locationId = encodeURI(locationName);
   const location = {
     _id: `${teamId}${locationId}`,
-    locationId,
+    team_id: teamId,
+    id: locationId,
     name: locationName
   };
   try {

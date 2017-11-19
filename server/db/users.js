@@ -15,7 +15,7 @@ getUser.operation = 'READ';
 getUser.byId = true;
 export function getUser(_id) {
   logger.debug('getUser', _id);
-  return users.find({ _id });
+  return users.findOne({ _id });
 }
 
 updateUser.operation = 'UPDATE';

@@ -12,7 +12,7 @@ export function getGroups(teamId) {
 getGroup.operation = 'READ';
 getGroup.byId = true;
 export function getGroup(_id) {
-  return groups.find({ _id });
+  return groups.findOne({ _id });
 }
 
 updateGroup.operation = 'CREATE';

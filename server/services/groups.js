@@ -14,7 +14,7 @@ export async function getGroups(teamId) {
   }
 }
 
-export async function updateGroup(teamId, group) {
+export async function addGroup(teamId, group) {
   if (!teamId) {
     throw new Error('Team id not provided.');
   }
@@ -29,8 +29,21 @@ export async function updateGroup(teamId, group) {
   }
 }
 
-export function addUserGroup(teamId, group) {
-  return updateGroup(teamId, group);
+export async function updateGroup(teamId, group) {
+  if (!teamId) {
+    throw new Error('Team id not provided.');
+  }
+  if (!group) {
+    throw new Error('Group not provided.');
+  }
+  const _id = `${teamId}${group.id}`;
+  const oldGroup = await DB.groups.getGroup(_id);
+  const newGroup = { ...oldGroup, ...group };
+  try {
+    return await DB.groups.updateGroup(newGroup);
+  } catch (e) {
+    throw new Error(e);
+  }
 }
 
 export async function removeGroup(teamId, groupId) {
@@ -59,7 +72,8 @@ export function updateUsers(teamId, users) {
       user.timestamp !== false &&
       new Date(user.timestamp).getTime() < today.getTime()
     ) {
-      USERS.updateUser(teamId, user.id, {
+      USERS.updateUser(teamId, {
+        id: user.id,
         active: true,
         timestamp: false
       });

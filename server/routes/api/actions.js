@@ -1,4 +1,5 @@
 import express from 'express';
+import { get } from 'lodash';
 import logger from '../../util/logger';
 import * as MESSAGE from '../../constants/messages';
 import { sendResponse } from '../../services/interactions';
@@ -34,8 +35,8 @@ router.post('/', (req, res) => {
       if (action.value === 'true') {
         LOCATIONS.getLocations(team.id).then(locations => {
           const locationOptions = locations.map(location => ({
-            text: decodeURI(location.city),
-            value: location.city
+            text: location.name,
+            value: location.id
           }));
           sendResponse(response_url, {
             response_type: 'ephermal',
@@ -58,7 +59,11 @@ router.post('/', (req, res) => {
     }
     case 'snooze': {
       if (action.value === 'false') {
-        USERS.updateUser(team.id, user.id, { active: true, timestamp: false });
+        USERS.updateUser(team.id, {
+          id: user.id,
+          active: true,
+          timestamp: false
+        });
         sendResponse(response_url, {
           response_type: 'ephermal',
           text: "👍 Cool! I'll include you again.",
@@ -70,7 +75,7 @@ router.post('/', (req, res) => {
         +new Date() + 1000 * 60 * 60 * 24 * 7 * Number(action.value)
       );
       const singOrPlur = Number(action.value) > 1 ? 'weeks' : 'week';
-      USERS.updateUser(team.id, user.id, { active: false, timestamp });
+      USERS.updateUser(team.id, { id: user.id, active: false, timestamp });
       sendResponse(response_url, {
         response_type: 'ephermal',
         text: `🗓 Alright! I'll include you again in ${action.value} ${
@@ -98,7 +103,7 @@ router.post('/', (req, res) => {
       break;
     }
     case 'location': {
-      const location = action.selected_options[0].value;
+      const location = get(action, 'selected_options[0].value');
       const userWithLocation = Object.assign(user, { location });
       USERS.addUser(team.id, userWithLocation);
       sendResponse(response_url, {
