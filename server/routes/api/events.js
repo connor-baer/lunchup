@@ -13,8 +13,7 @@ router.post('/', (req, res) => {
     logger.info(`Challenge: ${challenge}`);
 
     if (token === CONFIG.slack.verificationToken) {
-      res.json({ challenge });
-      return;
+      return res.json({ challenge });
     }
     res.status(401).end('Unauthorized');
   }
@@ -22,26 +21,19 @@ router.post('/', (req, res) => {
   const { response_url, event } = req.body;
 
   if (!event) {
-    res.status(422).end('No event specified');
-    return;
+    return res.status(422).end('No event specified');
   }
 
   // Best practice to respond with empty 200 status code.
   res.status(200).end();
 
-  let message = {};
-
-  switch (event.type) {
-    case 'message':
-      message = {
-        response_type: 'in_channel',
-        text: 'Hi there'
-      };
-      sendResponse(response_url, message);
-      break;
-    default:
-      logger.info(event.type);
+  if (event.type === 'message') {
+    return sendResponse(response_url, {
+      response_type: 'in_channel',
+      text: 'Hi there'
+    });
   }
+  return logger.info(event.type);
 });
 
 export { router as events };
