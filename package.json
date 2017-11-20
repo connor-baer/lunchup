@@ -17,7 +17,7 @@
     "build": "NODE_ENV=production webpack --config webpack.config.js",
     "clean": "rm -rf ./dist",
     "deploy": "now",
-    "dev": "npm run clean && webpack --config webpack.config.js --display-error-details",
+    "dev": "npm run clean && NODE_ENV=dev webpack --config webpack.config.js --display-error-details",
     "fix": "npm run fix:prettier; npm run fix:eslint",
     "fix:eslint": "eslint --fix --quiet \"server/**/*.js\"",
     "fix:prettier": "prettier --config prettier.config.js --write \"server/**/*.js\"",

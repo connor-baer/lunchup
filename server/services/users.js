@@ -9,6 +9,7 @@ export async function addUser(teamId, user) {
   }
   const newUser = {
     _id: `${teamId}${user.id}`,
+    team_id: teamId,
     active: true,
     snooze: false,
     ...user

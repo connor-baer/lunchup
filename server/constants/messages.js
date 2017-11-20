@@ -53,7 +53,7 @@ export const snooze = () => [
       },
       {
         name: 'snooze',
-        text: 'Cancel',
+        text: 'Resume',
         style: 'danger',
         type: 'button',
         value: 'false'

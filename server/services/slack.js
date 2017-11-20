@@ -121,7 +121,7 @@ export function startBot(teamId, botToken) {
         );
         break;
       }
-      case contains(text, ['snooze', 'pause', 'break']): {
+      case contains(text, ['snooze', 'pause', 'break', 'resume']): {
         api.chat.postMessage(
           channel,
           'How long would you like to take a break?',
@@ -159,11 +159,11 @@ export function startBot(teamId, botToken) {
         );
         break;
       }
-      case contains(text, ['location', 'city', 'office', 'place']): {
+      case contains(text, ['location', 'city', 'country', 'office', 'place']): {
         LOCATIONS.getLocations(teamId).then(locations => {
           const locationOptions = locations.map(location => ({
             text: decodeURI(location.name),
-            value: location.id
+            value: location.name
           }));
           api.chat.postMessage(
             channel,

@@ -21,9 +21,13 @@ export async function addGroup(teamId, group) {
   if (!group) {
     throw new Error('Group not provided.');
   }
-  const _id = `${teamId}${group.id}`;
+  const newGroup = {
+    _id: `${teamId}${group.id}`,
+    team_id: teamId,
+    ...group
+  };
   try {
-    return await DB.groups.updateGroup({ ...group, _id });
+    return await DB.groups.updateGroup(newGroup);
   } catch (e) {
     throw new Error(e);
   }

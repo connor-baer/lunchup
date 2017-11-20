@@ -5,7 +5,7 @@ import * as LOCATIONS from '../../../services/locations';
 
 export async function handleLocations(teamId, responseUrl, words) {
   const action = words[1];
-  const location = words.slice(2);
+  const location = words.slice(2).join(' ');
   if (!action) {
     return new Error('No action specified');
   }
@@ -38,7 +38,7 @@ async function handleAdd(teamId, responseUrl, location) {
     logger.error(`Failed to add ${location}`, e);
     return sendResponse(responseUrl, {
       response_type: 'ephermal',
-      text: `⛔ Failed to add ${location}.`
+      text: `⚠️ Failed to add ${location}.`
     });
   }
 }
@@ -54,7 +54,7 @@ async function handleRemove(teamId, responseUrl, location) {
     logger.error(`Failed to remove ${location}`, e);
     return sendResponse(responseUrl, {
       response_type: 'ephermal',
-      text: `⛔ Failed to remove ${location}.`
+      text: `⚠️ Failed to remove ${location}.`
     });
   }
 }
@@ -72,7 +72,7 @@ async function handleList(teamId, responseUrl, location) {
     logger.error('Failed to list the locations.', e);
     return sendResponse(responseUrl, {
       response_type: 'ephermal',
-      text: '⛔ Failed to list the locations.'
+      text: '⚠️ Failed to list the locations.'
     });
   }
 }
